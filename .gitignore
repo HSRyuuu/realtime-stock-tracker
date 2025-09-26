@@ -1,0 +1,90 @@
+# =========================
+# 📦 Global
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+
+# =========================
+# 🛠️ IntelliJ / VSCode
+# =========================
+.idea/
+*.iml
+.vscode/
+
+# =========================
+# 🐘 Gradle (backend)
+# =========================
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Java / Kotlin
+*.class
+*.jar
+*.war
+*.kt~  # vim/IDE temp files
+
+# Spring Boot
+*.db
+*.h2.db
+
+# =========================
+# ⚙️ Nuxt / Node.js (frontend)
+# =========================
+node_modules/
+dist/
+.nuxt/
+.nitro/
+.cache/
+*.tsbuildinfo
+
+# npm / yarn / pnpm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files (if used)
+.env
+.env.*
+!.env.example
+
+# =========================
+# 🐳 Docker
+# =========================
+docker-data/
+*.pid
+*.seed
+*.bak
+*.tar
+*.gz
+*.zip
+
+# =========================
+# 🧪 Test / Coverage
+# =========================
+coverage/
+test-output/
+reports/
+
+# =========================
+# 🔒 Security
+# =========================
+**/secrets.*
+**/credentials.*
+
+# =========================
+# 💡 Optional: OS-specific
+# =========================
+# macOS
+.AppleDouble
+.LSOverride
+
+# Windows
+ehthumbs.db
+Desktop.ini
