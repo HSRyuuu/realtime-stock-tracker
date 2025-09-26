@@ -11,17 +11,17 @@ Thumbs.db
 # =========================
 # 🛠️ IntelliJ / VSCode
 # =========================
-.idea/
 *.iml
+.idea/
+out/
 .vscode/
 
 # =========================
 # 🐘 Gradle (backend)
 # =========================
-.gradle/
-build/
-out/
-!gradle/wrapper/gradle-wrapper.jar
+**/build/
+**/.gradle/
+./temp/*
 
 # Java / Kotlin
 *.class
@@ -90,3 +90,5 @@ ehthumbs.db
 Desktop.ini
 /.idea/
 /RealtimeStockTracker/
+
+
