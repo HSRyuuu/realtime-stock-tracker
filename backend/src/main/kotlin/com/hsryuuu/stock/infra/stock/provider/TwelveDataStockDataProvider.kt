@@ -10,8 +10,7 @@ import com.hsryuuu.stock.domain.stock.model.dto.CandleResponse
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.infra.stock.api.TwelveDataFeignClient
 import com.hsryuuu.stock.infra.stock.param.ParameterConverter
-import com.hsryuuu.stock.infra.stock.response.TwelveDataErrorResponse
-import com.hsryuuu.stock.infra.stock.response.TwelveDataTimeSeriesResponse
+import com.hsryuuu.stock.infra.stock.response.TwelveData
 import com.hsryuuu.stock.infra.stock.type.StockApiResultType
 import com.hsryuuu.stock.infra.stock.type.StockApiSource
 import org.springframework.beans.factory.annotation.Value
@@ -35,9 +34,9 @@ class TwelveDataStockDataProvider(
         val paramMap = mapOf("symbol" to symbol, "timeframe" to timeframe.name) // params of this method
         try {
             rawJson = client.getTimeSeries(symbol, intervalString, apiKey) // TwelveData API 호출
-            val response = objectMapper.readValue(rawJson, TwelveDataTimeSeriesResponse::class.java)
+            val response = objectMapper.readValue(rawJson, TwelveData.TimeSeriesResponse::class.java)
             val stockCandles = response.values
-                .map { TwelveDataTimeSeriesResponse.toCandleDto(response.meta, it, timeframe) }
+                .map { TwelveData.TimeSeriesResponse.toCandleDto(response.meta, it, timeframe) }
                 .toList()
 
             // API 호출 로그 저장
@@ -66,9 +65,9 @@ class TwelveDataStockDataProvider(
         } catch (e: JsonProcessingException) {
             // 에러 응답 파싱
             val errorResponse = try {
-                objectMapper.readValue(rawJson, TwelveDataErrorResponse::class.java)
+                objectMapper.readValue(rawJson, TwelveData.ErrorResponse::class.java)
             } catch (_: Exception) {
-                TwelveDataErrorResponse(code = 0, message = "Invalid JSON structure", status = "error")
+                TwelveData.ErrorResponse(code = 0, message = "Invalid JSON structure", status = "error")
             }
             stockApiLogRepository.save(StockExternalApiLog.defaultError(StockApiSource.TWELVE_DATA, e, paramMap).apply {
                 resultType = StockApiResultType.TIME_SERIES_ERROR
@@ -80,6 +79,24 @@ class TwelveDataStockDataProvider(
             val savedLog =
                 stockApiLogRepository.save(StockExternalApiLog.defaultError(StockApiSource.TWELVE_DATA, e, paramMap))
             return ProcessResult.error(savedLog.message ?: "Unknown Error")
+        }
+    }
+
+    fun getAllStocks(): ProcessResult<TwelveData.StockSymbolResult> {
+        try {
+            val response = client.getStocks("demo")
+            return ProcessResult.success(response);
+        } catch (e: Exception) {
+            return ProcessResult.error("Unknown Error")
+        }
+    }
+
+    fun getAllEtfs(): ProcessResult<TwelveData.StockSymbolResult> {
+        try {
+            val response = client.getETFs("demo")
+            return ProcessResult.success(response);
+        } catch (e: Exception) {
+            return ProcessResult.error("Unknown Error")
         }
     }
 }

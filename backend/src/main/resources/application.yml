@@ -39,6 +39,11 @@ springdoc:
     enabled: true
     display-request-duration: true
 
+logging:
+  level:
+    org.hibernate.SQL: off
+    org.hibernate.type.descriptor.sql.BasicBinder: off
+
 twelve-data:
   api:
     key: demo
