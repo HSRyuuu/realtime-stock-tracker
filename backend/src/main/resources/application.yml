@@ -32,13 +32,13 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-twelve-data:
-  api:
-    key: demo
-
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
     display-request-duration: true
+
+twelve-data:
+  api:
+    key: demo
