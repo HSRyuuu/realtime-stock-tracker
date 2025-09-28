@@ -15,8 +15,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
         jdbc:
           batch_size: 1000
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:

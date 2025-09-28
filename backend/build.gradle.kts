@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.4.10"
+    id("org.springframework.boot") version "3.2.12"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
 }
@@ -37,17 +37,21 @@ dependencies {
 
     // Jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
     // QueryDSL
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
     annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
-    
+
     // kafka
     implementation("org.springframework.kafka:spring-kafka")
 
+    // FeignClient
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
     // swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -59,6 +63,12 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2023.0.3")
     }
 }
 
