@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface StockSymbolRepository : JpaRepository<StockSymbol, Long> {
+
+    fun existsBySymbol(symbol: String): Boolean
 }

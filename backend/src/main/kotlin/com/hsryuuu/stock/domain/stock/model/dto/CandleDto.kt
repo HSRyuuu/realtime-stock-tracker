@@ -3,6 +3,7 @@ package com.hsryuuu.stock.domain.stock.model.dto
 import com.hsryuuu.stock.application.type.CurrencyType
 import com.hsryuuu.stock.application.utils.BucketTimeUtils
 import com.hsryuuu.stock.domain.stock.model.entity.StockCandle
+import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -26,6 +27,19 @@ data class CandleDto(
             close = stockCandle.close,
             volume = stockCandle.volume,
             currency = stockCandle.currency,
+        )
+
+        fun toEntity(symbol: String, timeframe: Timeframe, candleDto: CandleDto): StockCandle = StockCandle(
+            symbol = symbol,
+            timeframe = timeframe,
+            bucketStartUtc = candleDto.time,
+            date = BucketTimeUtils.toUtcDate(candleDto.time),
+            open = candleDto.open,
+            high = candleDto.high,
+            low = candleDto.low,
+            close = candleDto.close,
+            volume = candleDto.volume,
+            currency = candleDto.currency,
         )
     }
 }

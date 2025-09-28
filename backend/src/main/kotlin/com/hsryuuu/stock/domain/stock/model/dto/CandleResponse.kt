@@ -4,7 +4,7 @@ import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 
 data class CandleResponse(
     val meta: Meta,
-    val candles: List<CandleDto>? = emptyList()
+    val candles: List<CandleDto> = emptyList()
 ) {
     data class Meta(
         val symbol: String,

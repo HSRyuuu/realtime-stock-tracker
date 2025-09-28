@@ -15,6 +15,7 @@ import com.hsryuuu.stock.infra.stock.type.StockApiResultType
 import com.hsryuuu.stock.infra.stock.type.StockApiSource
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class TwelveDataStockDataProvider(
@@ -28,7 +29,8 @@ class TwelveDataStockDataProvider(
     /**
      * 시간대별 주가 정보 조회
      */
-    override fun getTimeSeries(symbol: String, timeframe: Timeframe): ProcessResult<CandleResponse> {
+    @Transactional
+    override fun getTimeSeries(symbol: String, timeframe: Timeframe): CandleResponse? {
         val intervalString = converter.interval(timeframe)
         var rawJson: String? = null // response JSON String
         val paramMap = mapOf("symbol" to symbol, "timeframe" to timeframe.name) // params of this method
@@ -48,19 +50,18 @@ class TwelveDataStockDataProvider(
                 )
             )
 
-            return ProcessResult.success(
-                CandleResponse(
-                    meta = CandleResponse.Meta(
-                        symbol = response.meta.symbol,
-                        timeframe = timeframe,
-                        currency = response.meta.currency,
-                        exchangeTimezone = response.meta.exchangeTimezone,
-                        exchange = response.meta.exchange,
-                        micCode = response.meta.micCode,
-                        type = response.meta.type
-                    ),
-                    candles = stockCandles
-                )
+            return CandleResponse(
+                meta = CandleResponse.Meta(
+                    symbol = response.meta.symbol,
+                    timeframe = timeframe,
+                    currency = response.meta.currency,
+                    exchangeTimezone = response.meta.exchangeTimezone,
+                    exchange = response.meta.exchange,
+                    micCode = response.meta.micCode,
+                    type = response.meta.type
+                ),
+                candles = stockCandles
+
             )
         } catch (e: JsonProcessingException) {
             // 에러 응답 파싱
@@ -74,12 +75,12 @@ class TwelveDataStockDataProvider(
                 message = errorResponse.message
                 status = errorResponse.code
             })
-            return ProcessResult.error(errorResponse.message)
+
         } catch (e: Exception) {
             val savedLog =
                 stockApiLogRepository.save(StockExternalApiLog.defaultError(StockApiSource.TWELVE_DATA, e, paramMap))
-            return ProcessResult.error(savedLog.message ?: "Unknown Error")
         }
+        return null
     }
 
     fun getAllStocks(): ProcessResult<TwelveData.StockSymbolResult> {

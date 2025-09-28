@@ -4,11 +4,11 @@ import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 
 class TwelveDataParameterConverter : ParameterConverter {
     private val unitMapping: Map<Timeframe, String> = mapOf(
-        Timeframe.MIN1 to "1m",
-        Timeframe.MIN5 to "5m",
-        Timeframe.MIN15 to "15m",
-        Timeframe.MIN30 to "30m",
-        Timeframe.MIN45 to "45m",
+        Timeframe.MIN1 to "1min",
+        Timeframe.MIN5 to "5min",
+        Timeframe.MIN15 to "15min",
+        Timeframe.MIN30 to "30min",
+        Timeframe.MIN45 to "45min",
         Timeframe.HOUR1 to "1h",
         Timeframe.HOUR2 to "2h",
         Timeframe.HOUR4 to "4h",

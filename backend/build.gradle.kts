@@ -2,8 +2,10 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.2.12"
-    id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
+    kotlin("kapt") version "1.9.25"
+    id("io.spring.dependency-management") version "1.1.7"
+
 }
 
 group = "com.hsryuuu"
@@ -40,7 +42,7 @@ dependencies {
 
     // QueryDSL
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
-    annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 
@@ -76,6 +78,14 @@ allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
     annotation("jakarta.persistence.Embeddable")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir("build/generated/source/kapt/main") // Q타입 위치
+        }
+    }
 }
 
 tasks.withType<Test> {

@@ -4,6 +4,7 @@ import com.hsryuuu.stock.application.type.CurrencyType
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import jakarta.persistence.*
 import java.math.BigDecimal
+import java.time.LocalDate
 
 @Entity
 @Table(name = "STOCK_CANDLE")
@@ -22,6 +23,9 @@ data class StockCandle(
     @Id
     @Column(nullable = false)
     val bucketStartUtc: Long,
+
+    @Column(name = "date", nullable = false)
+    val date: LocalDate,
 
     @Column(nullable = false, precision = 18, scale = 8)
     val open: BigDecimal,
