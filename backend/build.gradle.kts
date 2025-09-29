@@ -30,8 +30,8 @@ repositories {
 
 dependencies {
     // Kotlin
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // Base
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -45,6 +45,9 @@ dependencies {
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
+    // Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
     // kafka
     implementation("org.springframework.kafka:spring-kafka")

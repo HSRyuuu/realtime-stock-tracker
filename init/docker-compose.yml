@@ -1,0 +1,58 @@
+services:
+  # db는 일단 로컬에
+  #  db:
+  #    image: mariadb:11.4   # 최신 LTS 버전 (MySQL 8 호환)
+  #    container_name: stock-mariadb
+  #    ports:
+  #      - "3306:3306"
+  #    environment:
+  #      MARIADB_DATABASE: stock
+  #      MARIADB_USER: root
+  #      MARIADB_PASSWORD: test
+  #    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7
+    container_name: stock-redis
+    ports:
+      - "6379:6379"
+  stock-zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: stock-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+  stock-kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: stock-kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: stock-zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://stock-kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_HOST
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - stock-zookeeper
+
+  kafka-ui-stock:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui-stock
+    ports:
+      - "8085:8080"
+    depends_on:
+      - stock-kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: stock-kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: stock-zookeeper:2181
+
+networks:
+  default:
+    name: stock-network
