@@ -1,6 +1,6 @@
-package com.hsryuuu.stock.infra.stock.api
+package com.hsryuuu.stock.infra.stockapi.api
 
-import com.hsryuuu.stock.infra.stock.response.TwelveData
+import com.hsryuuu.stock.infra.stockapi.response.TwelveData
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam

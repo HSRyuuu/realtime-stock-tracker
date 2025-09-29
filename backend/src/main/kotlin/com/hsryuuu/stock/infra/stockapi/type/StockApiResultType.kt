@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.infra.stock.type
+package com.hsryuuu.stock.infra.stockapi.type
 
 enum class StockApiResultType {
     SUCCESS,

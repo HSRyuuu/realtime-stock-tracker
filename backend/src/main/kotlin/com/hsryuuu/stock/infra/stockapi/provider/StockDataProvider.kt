@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.infra.stock.provider
+package com.hsryuuu.stock.infra.stockapi.provider
 
 import com.hsryuuu.stock.domain.stock.model.dto.CandleResponse
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe

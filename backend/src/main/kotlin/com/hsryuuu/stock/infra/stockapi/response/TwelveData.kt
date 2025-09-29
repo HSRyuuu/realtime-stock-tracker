@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.infra.stock.response
+package com.hsryuuu.stock.infra.stockapi.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.hsryuuu.stock.application.type.CurrencyType

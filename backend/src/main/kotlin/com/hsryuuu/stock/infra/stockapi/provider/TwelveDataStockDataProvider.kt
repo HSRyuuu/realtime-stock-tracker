@@ -1,20 +1,23 @@
-package com.hsryuuu.stock.infra.stock.provider
+package com.hsryuuu.stock.infra.stockapi.provider
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hsryuuu.stock.application.exception.GlobalException
 import com.hsryuuu.stock.application.type.ProcessResult
 import com.hsryuuu.stock.application.utils.LogUtils
 import com.hsryuuu.stock.domain.log.externalapi.StockExternalApiLog
 import com.hsryuuu.stock.domain.log.externalapi.StockExternalApiLogRepository
 import com.hsryuuu.stock.domain.stock.model.dto.CandleResponse
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
-import com.hsryuuu.stock.infra.stock.api.TwelveDataFeignClient
-import com.hsryuuu.stock.infra.stock.param.ParameterConverter
-import com.hsryuuu.stock.infra.stock.response.TwelveData
-import com.hsryuuu.stock.infra.stock.type.StockApiResultType
-import com.hsryuuu.stock.infra.stock.type.StockApiSource
+import com.hsryuuu.stock.infra.redis.limit.TwelveDataApiRateLimiter
+import com.hsryuuu.stock.infra.stockapi.api.TwelveDataFeignClient
+import com.hsryuuu.stock.infra.stockapi.param.ParameterConverter
+import com.hsryuuu.stock.infra.stockapi.response.TwelveData
+import com.hsryuuu.stock.infra.stockapi.type.StockApiResultType
+import com.hsryuuu.stock.infra.stockapi.type.StockApiSource
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,6 +27,7 @@ class TwelveDataStockDataProvider(
     private val converter: ParameterConverter,
     private val objectMapper: ObjectMapper,
     private val stockApiLogRepository: StockExternalApiLogRepository,
+    private val twelveDataApiRateLimiter: TwelveDataApiRateLimiter,
     @Value("\${twelve-data.api.key}") private val apiKey: String
 ) : StockDataProvider {
 
@@ -35,6 +39,9 @@ class TwelveDataStockDataProvider(
      */
     @Transactional
     override fun getTimeSeries(symbol: String, timeframe: Timeframe): CandleResponse? {
+        if (!twelveDataApiRateLimiter.checkAndIncrement(StockApiSource.TWELVE_DATA.name)) {
+            throw GlobalException(HttpStatus.TOO_MANY_REQUESTS, "TwelveData API 호출 제한 초과")
+        }
         val intervalString = converter.interval(timeframe)
         var rawJson: String? = null // response JSON String
         val paramMap = mapOf("symbol" to symbol, "timeframe" to timeframe.name) // params of this method

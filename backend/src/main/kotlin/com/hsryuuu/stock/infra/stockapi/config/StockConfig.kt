@@ -1,7 +1,7 @@
-package com.hsryuuu.stock.infra.stock.config
+package com.hsryuuu.stock.infra.stockapi.config
 
-import com.hsryuuu.stock.infra.stock.param.ParameterConverter
-import com.hsryuuu.stock.infra.stock.param.TwelveDataParameterConverter
+import com.hsryuuu.stock.infra.stockapi.param.ParameterConverter
+import com.hsryuuu.stock.infra.stockapi.param.TwelveDataParameterConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
