@@ -2,6 +2,7 @@ package com.hsryuuu.stock.domain.stock.model.dto
 
 import com.hsryuuu.stock.application.type.CurrencyType
 import com.hsryuuu.stock.application.utils.BucketTimeUtils
+import com.hsryuuu.stock.application.utils.TimeUtils
 import com.hsryuuu.stock.domain.stock.model.entity.StockCandle
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import java.math.BigDecimal
@@ -19,7 +20,10 @@ data class CandleDto(
 ) {
     companion object {
         fun fromEntity(stockCandle: StockCandle): CandleDto = CandleDto(
-            datetime = BucketTimeUtils.toUtcDateTime(stockCandle.bucketStartUtc),
+            datetime = BucketTimeUtils.toDateTimeByZone(
+                stockCandle.bucketStartUtc,
+                TimeUtils.TIME_ZONE_ASIA_SEOUL
+            ),
             time = stockCandle.bucketStartUtc,
             open = stockCandle.open,
             high = stockCandle.high,

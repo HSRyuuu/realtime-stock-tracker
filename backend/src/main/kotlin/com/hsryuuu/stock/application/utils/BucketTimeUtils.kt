@@ -48,7 +48,7 @@ object BucketTimeUtils {
 
     // millis → UTC LocalDateTime
     fun toUtcDateTime(millis: Long): LocalDateTime =
-        LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.of("UTC"))
+        LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.of(TimeUtils.TIME_ZONE_UTC))
 
     // millis → 특정 타임존 LocalDateTime
     fun toLocalDateTime(millis: Long, zoneId: String): LocalDateTime =
@@ -58,4 +58,6 @@ object BucketTimeUtils {
     fun toUtcDate(millis: Long): LocalDate =
         toUtcDateTime(millis).toLocalDate()
 
+    fun toDateTimeByZone(millis: Long, zoneId: String): LocalDateTime =
+        LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.of(zoneId))
 }

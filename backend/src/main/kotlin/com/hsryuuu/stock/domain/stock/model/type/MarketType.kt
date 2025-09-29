@@ -1,6 +1,10 @@
 package com.hsryuuu.stock.domain.stock.model.type
 
 enum class MarketType(val engName: String, val korName: String) {
+
+    US("United States", "미국 공통"),
+    KOR("Korea", "한국 공통"),
+
     // 🇺🇸 미국
     NASDAQ("Nasdaq Stock Market", "나스닥"),
     NYSE("New York Stock Exchange", "뉴욕증권거래소"),

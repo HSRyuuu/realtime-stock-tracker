@@ -13,6 +13,7 @@ import com.hsryuuu.stock.infra.stock.param.ParameterConverter
 import com.hsryuuu.stock.infra.stock.response.TwelveData
 import com.hsryuuu.stock.infra.stock.type.StockApiResultType
 import com.hsryuuu.stock.infra.stock.type.StockApiSource
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -25,6 +26,9 @@ class TwelveDataStockDataProvider(
     private val stockApiLogRepository: StockExternalApiLogRepository,
     @Value("\${twelve-data.api.key}") private val apiKey: String
 ) : StockDataProvider {
+
+    private val log = LoggerFactory.getLogger(TwelveDataStockDataProvider::class.java)
+
 
     /**
      * 시간대별 주가 정보 조회
@@ -49,6 +53,8 @@ class TwelveDataStockDataProvider(
                     LogUtils.currentLocation(TwelveDataStockDataProvider::class.java)
                 )
             )
+            log.info("TwelveData TimeSeries 데이터 수집 성공: symbol: {}", symbol)
+
 
             return CandleResponse(
                 meta = CandleResponse.Meta(

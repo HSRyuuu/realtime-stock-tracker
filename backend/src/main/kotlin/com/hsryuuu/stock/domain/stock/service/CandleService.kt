@@ -2,7 +2,7 @@ package com.hsryuuu.stock.domain.stock.service
 
 import com.hsryuuu.stock.application.exception.GlobalErrorMessage
 import com.hsryuuu.stock.application.exception.GlobalException
-import com.hsryuuu.stock.application.type.TimeZoneId
+import com.hsryuuu.stock.application.utils.StockTimeUtils
 import com.hsryuuu.stock.application.utils.TimeUtils
 import com.hsryuuu.stock.domain.stock.model.dto.CandleDto
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
@@ -13,7 +13,7 @@ import com.hsryuuu.stock.infra.stock.provider.TwelveDataStockDataProvider
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.ZoneId
+import java.time.LocalDateTime
 
 @Service
 class CandleService(
@@ -27,13 +27,12 @@ class CandleService(
         if (!stockSymbolRepository.existsBySymbol(symbol)) {
             throw GlobalException(HttpStatus.NOT_FOUND, GlobalErrorMessage.resourceNotFound("심볼"))
         }
-        val referenceDate = resolveReferenceDate()
+        val referenceDate = resolveReferenceDate(TimeUtils.TIME_ZONE_AMERICA_NEW_YORK) // 일단 하드코딩
         if (!stockCandleRepository.existsBySymbolAndDate(symbol, referenceDate)) {
             collectAndSaveCandles(symbol, timeframe)
         }
-        // 일단 한국 기준
-        val epochMilli = from.atStartOfDay().atZone(ZoneId.of(TimeZoneId.ASIA_SEOUL.value))
-            .toInstant().toEpochMilli()
+        // 미국 장 시작 시간
+        val epochMilli = TimeUtils.getZoneEpochMilli(referenceDate.atStartOfDay())
 
         customStockCandleRepository.findBySymbolAndTimeframe(symbol, timeframe, epochMilli)
             .map { CandleDto.fromEntity(it) }.toList().let {
@@ -44,13 +43,14 @@ class CandleService(
     /**
      * 주말일 경우에 휴장이므로, 지난 금요일을 반환
      */
-    private fun resolveReferenceDate(): LocalDate {
-        val today = LocalDate.now()
-        var referenceDate = TimeUtils.getYesterday(today)
-        if (TimeUtils.isWeekend(today)) {
-            referenceDate = TimeUtils.getLastFriday(today)
+    private fun resolveReferenceDate(zoneId: String): LocalDate {
+        val isMarketOpen =
+            StockTimeUtils.isMarketOpenNow(LocalDateTime.now(), zoneId)
+        return if (!isMarketOpen) {
+            TimeUtils.getLastFriday(LocalDate.now())
+        } else {
+            TimeUtils.getYesterday(LocalDate.now())
         }
-        return referenceDate
     }
 
     private fun collectAndSaveCandles(symbol: String, timeframe: Timeframe) {
