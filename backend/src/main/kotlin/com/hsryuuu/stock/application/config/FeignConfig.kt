@@ -4,6 +4,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@EnableFeignClients(basePackages = ["com.hsryuuu.stock.infra.stock.api"])
+@EnableFeignClients(basePackages = ["com.hsryuuu.stock.infra.stockapi.api"])
 class FeignConfig {
 }

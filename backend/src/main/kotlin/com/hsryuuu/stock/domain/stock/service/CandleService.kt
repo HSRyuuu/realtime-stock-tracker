@@ -9,7 +9,7 @@ import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.repository.CustomStockCandleRepository
 import com.hsryuuu.stock.domain.stock.repository.StockCandleRepository
 import com.hsryuuu.stock.domain.stock.repository.StockSymbolRepository
-import com.hsryuuu.stock.infra.stock.provider.TwelveDataStockDataProvider
+import com.hsryuuu.stock.infra.stockapi.provider.TwelveDataStockDataProvider
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -20,7 +20,7 @@ class CandleService(
     private val stockSymbolRepository: StockSymbolRepository,
     private val stockCandleRepository: StockCandleRepository,
     private val customStockCandleRepository: CustomStockCandleRepository,
-    private val stockDataProvider: TwelveDataStockDataProvider
+    private val stockDataProvider: TwelveDataStockDataProvider,
 ) {
 
     fun getCandles(symbol: String, timeframe: Timeframe, from: LocalDate): List<CandleDto> {
@@ -32,7 +32,7 @@ class CandleService(
             collectAndSaveCandles(symbol, timeframe)
         }
         // 미국 장 시작 시간
-        val epochMilli = TimeUtils.getZoneEpochMilli(referenceDate.atStartOfDay())
+        val epochMilli = TimeUtils.getZoneEpochMilli(from.atStartOfDay())
 
         customStockCandleRepository.findBySymbolAndTimeframe(symbol, timeframe, epochMilli)
             .map { CandleDto.fromEntity(it) }.toList().let {

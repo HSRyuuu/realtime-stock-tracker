@@ -1,8 +1,8 @@
 package com.hsryuuu.stock.domain.log.externalapi
 
 import com.hsryuuu.stock.application.utils.LogUtils
-import com.hsryuuu.stock.infra.stock.type.StockApiResultType
-import com.hsryuuu.stock.infra.stock.type.StockApiSource
+import com.hsryuuu.stock.infra.stockapi.type.StockApiResultType
+import com.hsryuuu.stock.infra.stockapi.type.StockApiSource
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime

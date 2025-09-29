@@ -1,8 +1,8 @@
 package com.hsryuuu.stock.domain.stock.service
 
 import com.hsryuuu.stock.domain.stock.model.type.StockType
-import com.hsryuuu.stock.infra.stock.provider.TwelveDataStockDataProvider
-import com.hsryuuu.stock.infra.stock.response.TwelveData
+import com.hsryuuu.stock.infra.stockapi.provider.TwelveDataStockDataProvider
+import com.hsryuuu.stock.infra.stockapi.response.TwelveData
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
