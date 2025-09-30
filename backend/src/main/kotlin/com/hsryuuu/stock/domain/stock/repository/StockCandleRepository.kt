@@ -9,4 +9,5 @@ import java.time.LocalDate
 @Repository
 interface StockCandleRepository : JpaRepository<StockCandle, StockCandleId> {
     fun existsBySymbolAndDate(symbol: String, date: LocalDate): Boolean
+    fun findFirstBySymbolOrderByBucketStartUtcDesc(symbol: String): StockCandle?
 }

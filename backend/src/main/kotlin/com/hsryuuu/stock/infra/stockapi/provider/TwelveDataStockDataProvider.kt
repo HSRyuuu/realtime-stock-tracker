@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Component
 class TwelveDataStockDataProvider(
@@ -38,7 +39,7 @@ class TwelveDataStockDataProvider(
      * 시간대별 주가 정보 조회
      */
     @Transactional
-    override fun getTimeSeries(symbol: String, timeframe: Timeframe): CandleResponse? {
+    override fun getTimeSeries(symbol: String, timeframe: Timeframe, startDate: LocalDate): CandleResponse? {
         if (!twelveDataApiRateLimiter.checkAndIncrement(StockApiSource.TWELVE_DATA.name)) {
             throw GlobalException(HttpStatus.TOO_MANY_REQUESTS, "TwelveData API 호출 제한 초과")
         }
@@ -46,7 +47,7 @@ class TwelveDataStockDataProvider(
         var rawJson: String? = null // response JSON String
         val paramMap = mapOf("symbol" to symbol, "timeframe" to timeframe.name) // params of this method
         try {
-            rawJson = client.getTimeSeries(symbol, intervalString, apiKey) // TwelveData API 호출
+            rawJson = client.getTimeSeries(symbol, intervalString, apiKey, startDate.toString()) // TwelveData API 호출
             val response = objectMapper.readValue(rawJson, TwelveData.TimeSeriesResponse::class.java)
             val stockCandles = response.values
                 .map { TwelveData.TimeSeriesResponse.toCandleDto(response.meta, it, timeframe) }
@@ -77,6 +78,9 @@ class TwelveDataStockDataProvider(
 
             )
         } catch (e: JsonProcessingException) {
+
+            log.info("TwelveData TimeSeries 데이터 수집 실패: symbol: {} \n response={}", symbol, rawJson)
+
             // 에러 응답 파싱
             val errorResponse = try {
                 objectMapper.readValue(rawJson, TwelveData.ErrorResponse::class.java)

@@ -54,9 +54,23 @@ class CandleService(
     }
 
     private fun collectAndSaveCandles(symbol: String, timeframe: Timeframe) {
-        val candleResponse = stockDataProvider.getTimeSeries(symbol, timeframe) ?: return
+        val existingLatestCandle = stockCandleRepository.findFirstBySymbolOrderByBucketStartUtcDesc(symbol)
+
+        var startDate = LocalDate.now().minusYears(5L)
+        if (existingLatestCandle != null) {
+            startDate = existingLatestCandle.date.plusDays(1L)
+        }
+        val candleResponse =
+            stockDataProvider.getTimeSeries(symbol, timeframe, startDate) ?: return
         val candles = candleResponse.candles
-        stockCandleRepository.saveAll(candles.map { CandleDto.toEntity(symbol, timeframe, it) })
+
+        stockCandleRepository.saveAll(candles.map {
+            CandleDto.toEntity(
+                symbol,
+                timeframe,
+                it
+            )
+        })
 
     }
 }

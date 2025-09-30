@@ -16,6 +16,7 @@ interface TwelveDataFeignClient {
         @RequestParam symbol: String = "AAPL",
         @RequestParam interval: String = "1day",
         @RequestParam apikey: String = "demo",
+        @RequestParam(name = "start_date") startDate: String,
         @RequestParam format: String = "JSON",
     ): String
 
