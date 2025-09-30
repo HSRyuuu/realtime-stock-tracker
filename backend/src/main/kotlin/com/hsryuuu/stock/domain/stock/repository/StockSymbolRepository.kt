@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface StockSymbolRepository : JpaRepository<StockSymbol, Long> {
 
     fun existsBySymbol(symbol: String): Boolean
+    fun findBySymbol(symbol: String): StockSymbol?
 }
