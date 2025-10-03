@@ -16,15 +16,15 @@ class CustomStockCandleRepository(
     /**
      * symbol + timeframe 조건으로 조회, bucketStartUtc 오름차순
      */
-    fun findBySymbolAndTimeframe(symbol: String, timeframe: Timeframe, epochMilli: Long): List<StockCandle> {
+    fun findBySymbolAndTimeframe(symbol: String, timeframe: Timeframe, startEpochMillis: Long): List<StockCandle> {
         return queryFactory
             .selectFrom(stockCandle)
             .where(
                 stockCandle.symbol.eq(symbol),
                 stockCandle.timeframe.eq(timeframe),
-                stockCandle.bucketStartUtc.goe(epochMilli)
+                stockCandle.bucketStartUtc.goe(startEpochMillis)
             )
-            .orderBy(stockCandle.bucketStartUtc.desc())
+            .orderBy(stockCandle.bucketStartUtc.asc())
             .fetch()
     }
 }

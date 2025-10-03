@@ -2,11 +2,11 @@ package com.hsryuuu.stock.infra.stockapi.provider
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hsryuuu.stock.application.exception.GlobalException
-import com.hsryuuu.stock.application.type.ProcessResult
+import com.hsryuuu.stock.application.dto.ProcessResult
 import com.hsryuuu.stock.application.utils.LogUtils
 import com.hsryuuu.stock.domain.log.externalapi.StockExternalApiLog
 import com.hsryuuu.stock.domain.log.externalapi.StockExternalApiLogRepository
+import com.hsryuuu.stock.domain.stock.model.dto.CandleDto
 import com.hsryuuu.stock.domain.stock.model.dto.CandleResponse
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.infra.redis.limit.TwelveDataApiRateLimiter
@@ -17,7 +17,6 @@ import com.hsryuuu.stock.infra.stockapi.type.StockApiResultType
 import com.hsryuuu.stock.infra.stockapi.type.StockApiSource
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -39,65 +38,97 @@ class TwelveDataStockDataProvider(
      * 시간대별 주가 정보 조회
      */
     @Transactional
-    override fun getTimeSeries(symbol: String, timeframe: Timeframe, startDate: LocalDate): CandleResponse? {
-        if (!twelveDataApiRateLimiter.checkAndIncrement(StockApiSource.TWELVE_DATA.name)) {
-            throw GlobalException(HttpStatus.TOO_MANY_REQUESTS, "TwelveData API 호출 제한 초과")
+    override fun getTimeSeries(
+        symbol: String,
+        timeframe: Timeframe,
+        startDate: LocalDate
+    ): ProcessResult<CandleResponse> {
+        if (!checkRateLimit().success) {
+            return ProcessResult.fail();
         }
-        val intervalString = converter.interval(timeframe)
+        val paramMap = mapOf("symbol" to symbol, "timeframe" to timeframe.name) // 로그용
         var rawJson: String? = null // response JSON String
-        val paramMap = mapOf("symbol" to symbol, "timeframe" to timeframe.name) // params of this method
-        try {
-            rawJson = client.getTimeSeries(symbol, intervalString, apiKey, startDate.toString()) // TwelveData API 호출
-            val response = objectMapper.readValue(rawJson, TwelveData.TimeSeriesResponse::class.java)
+
+        return try {
+            rawJson = fetchTimeSeries(symbol, timeframe, startDate) // TwelveData API 호출
+            val response = parseResponseJson(rawJson)
             val stockCandles = response.values
                 .map { TwelveData.TimeSeriesResponse.toCandleDto(response.meta, it, timeframe) }
                 .toList()
-
-            // API 호출 로그 저장
-            stockApiLogRepository.save(
-                StockExternalApiLog.defaultSuccess(
-                    StockApiSource.TWELVE_DATA,
-                    paramMap,
-                    LogUtils.currentLocation(TwelveDataStockDataProvider::class.java)
-                )
-            )
-            log.info("TwelveData TimeSeries 데이터 수집 성공: symbol: {}", symbol)
-
-
-            return CandleResponse(
-                meta = CandleResponse.Meta(
-                    symbol = response.meta.symbol,
-                    timeframe = timeframe,
-                    currency = response.meta.currency,
-                    exchangeTimezone = response.meta.exchangeTimezone,
-                    exchange = response.meta.exchange,
-                    micCode = response.meta.micCode,
-                    type = response.meta.type
-                ),
-                candles = stockCandles
-
-            )
+            logSuccess(paramMap, symbol) //성공 로그 저장
+            ProcessResult.success(buildCandleResponse(response, timeframe, stockCandles))
         } catch (e: JsonProcessingException) {
-
             log.info("TwelveData TimeSeries 데이터 수집 실패: symbol: {} \n response={}", symbol, rawJson)
-
-            // 에러 응답 파싱
-            val errorResponse = try {
-                objectMapper.readValue(rawJson, TwelveData.ErrorResponse::class.java)
-            } catch (_: Exception) {
-                TwelveData.ErrorResponse(code = 0, message = "Invalid JSON structure", status = "error")
-            }
-            stockApiLogRepository.save(StockExternalApiLog.defaultError(StockApiSource.TWELVE_DATA, e, paramMap).apply {
-                resultType = StockApiResultType.TIME_SERIES_ERROR
-                message = errorResponse.message
-                status = errorResponse.code
-            })
-
+            handleJsonParsingError(e, rawJson, paramMap)
+            ProcessResult.fail()
         } catch (e: Exception) {
-            val savedLog =
-                stockApiLogRepository.save(StockExternalApiLog.defaultError(StockApiSource.TWELVE_DATA, e, paramMap))
+            log.info("알수없는 에러 발생 - TwelveData TimeSeries 데이터 수집 실패: symbol: {} \n response={}", symbol, rawJson)
+            handleGeneralError(e, paramMap)
+            ProcessResult.fail()
         }
-        return null
+    }
+
+    private fun checkRateLimit(): ProcessResult<Unit> {
+        if (!twelveDataApiRateLimiter.checkAndIncrement(StockApiSource.TWELVE_DATA.name)) {
+            log.warn("TwelveData API 호출 제한 초과")
+            return ProcessResult.fail()
+        }
+        return ProcessResult.success(Unit)
+    }
+
+    private fun fetchTimeSeries(symbol: String, timeframe: Timeframe, startDate: LocalDate): String =
+        client.getTimeSeries(symbol, converter.interval(timeframe), apiKey, startDate.toString())
+
+    private fun parseResponseJson(rawJson: String): TwelveData.TimeSeriesResponse =
+        objectMapper.readValue(rawJson, TwelveData.TimeSeriesResponse::class.java)
+
+    private fun logSuccess(paramMap: Map<String, String>, symbol: String) {
+        stockApiLogRepository.save(
+            StockExternalApiLog.defaultSuccess(
+                StockApiSource.TWELVE_DATA,
+                paramMap,
+                LogUtils.currentLocation(TwelveDataStockDataProvider::class.java)
+            )
+        )
+        log.info("TwelveData TimeSeries 데이터 수집 성공: symbol: {}", symbol)
+    }
+
+    private fun buildCandleResponse(
+        response: TwelveData.TimeSeriesResponse,
+        timeframe: Timeframe,
+        candles: List<CandleDto>
+    ) = CandleResponse(
+        meta = CandleResponse.Meta(
+            symbol = response.meta.symbol,
+            timeframe = timeframe,
+            currency = response.meta.currency,
+            exchangeTimezone = response.meta.exchangeTimezone,
+            exchange = response.meta.exchange,
+            micCode = response.meta.micCode,
+            type = response.meta.type
+        ),
+        candles = candles
+    )
+
+    private fun handleJsonParsingError(
+        e: JsonProcessingException,
+        rawJson: String? = null,
+        paramMap: Map<String, String>
+    ) {
+        val errorResponse = try {
+            objectMapper.readValue(rawJson, TwelveData.ErrorResponse::class.java)
+        } catch (_: Exception) {
+            TwelveData.ErrorResponse(code = 0, message = "Invalid JSON structure", status = "error")
+        }
+        stockApiLogRepository.save(StockExternalApiLog.defaultError(StockApiSource.TWELVE_DATA, e, paramMap).apply {
+            resultType = StockApiResultType.TIME_SERIES_ERROR
+            message = errorResponse.message
+            status = errorResponse.code
+        })
+    }
+
+    private fun handleGeneralError(e: Exception, paramMap: Map<String, String>) {
+        stockApiLogRepository.save(StockExternalApiLog.defaultError(StockApiSource.TWELVE_DATA, e, paramMap))
     }
 
     fun getAllStocks(): ProcessResult<TwelveData.StockSymbolResult> {

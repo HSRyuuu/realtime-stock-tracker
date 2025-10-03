@@ -25,7 +25,9 @@ object TimeUtils {
         dateTime: LocalDateTime,
         zoneId: String? = TIME_ZONE_AMERICA_NEW_YORK
     ): ZonedDateTime {
-        return dateTime.atZone(ZoneId.of(zoneId))
+        val sourceZone = ZoneId.systemDefault()
+        val targetZone = ZoneId.of(zoneId)
+        return dateTime.atZone(sourceZone).withZoneSameInstant(targetZone)
     }
 
     fun getZoneEpochMilli(dateTime: LocalDateTime, zoneId: String? = TIME_ZONE_AMERICA_NEW_YORK): Long {

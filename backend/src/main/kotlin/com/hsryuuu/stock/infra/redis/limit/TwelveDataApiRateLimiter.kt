@@ -10,8 +10,7 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class TwelveDataApiRateLimiter(
-    private val redisTemplate: StringRedisTemplate,
-    private val stringRedisTemplate: StringRedisTemplate
+    private val redisTemplate: StringRedisTemplate
 ) {
     private val log = LoggerFactory.getLogger(TwelveDataApiRateLimiter::class.java)
 
@@ -20,6 +19,10 @@ class TwelveDataApiRateLimiter(
         const val DEFAULT_DAY_LIMIT = 800;
     }
 
+    /**
+     * API 이용 제한 여부 확인
+     * 이용가능: TRUE, 이용 불가: FAIL
+     */
     fun checkAndIncrement(key: String): Boolean {
         val now = LocalDateTime.now(ZoneOffset.UTC)
         val minuteKey = "rate:$key:minute:${now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))}"
