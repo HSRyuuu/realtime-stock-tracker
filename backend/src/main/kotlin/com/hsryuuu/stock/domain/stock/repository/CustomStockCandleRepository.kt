@@ -16,7 +16,11 @@ class CustomStockCandleRepository(
     /**
      * symbol + timeframe 조건으로 조회, bucketStartUtc 오름차순
      */
-    fun findBySymbolAndTimeframe(symbol: String, timeframe: Timeframe, startEpochMillis: Long): List<StockCandle> {
+    fun findBySymbolAndTimeframeOrderByTimeAsc(
+        symbol: String,
+        timeframe: Timeframe,
+        startEpochMillis: Long
+    ): List<StockCandle> {
         return queryFactory
             .selectFrom(stockCandle)
             .where(

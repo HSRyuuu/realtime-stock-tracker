@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.domain.stock.service
+package com.hsryuuu.stock.domain.admin
 
 import com.hsryuuu.stock.domain.stock.model.type.StockType
 import com.hsryuuu.stock.infra.stockapi.provider.TwelveDataStockDataProvider

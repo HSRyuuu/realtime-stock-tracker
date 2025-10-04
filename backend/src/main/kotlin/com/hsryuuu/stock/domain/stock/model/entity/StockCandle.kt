@@ -3,9 +3,13 @@ package com.hsryuuu.stock.domain.stock.model.entity
 import com.hsryuuu.stock.application.type.CurrencyType
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import jakarta.persistence.*
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 
+@EntityListeners(AuditingEntityListener::class)
 @Entity
 @Table(name = "STOCK_CANDLE")
 @IdClass(StockCandleId::class)
@@ -44,5 +48,10 @@ data class StockCandle(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "currency")
-    val currency: CurrencyType? = null
-)
+    val currency: CurrencyType? = null,
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    var updatedAt: LocalDateTime? = null,
+
+    )

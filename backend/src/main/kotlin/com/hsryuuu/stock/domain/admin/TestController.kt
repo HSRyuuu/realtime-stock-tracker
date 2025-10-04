@@ -1,8 +1,7 @@
-package com.hsryuuu.stock.domain.stock.controller
+package com.hsryuuu.stock.domain.admin
 
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.service.CandleService
-import com.hsryuuu.stock.domain.stock.service.StockMasterService
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
