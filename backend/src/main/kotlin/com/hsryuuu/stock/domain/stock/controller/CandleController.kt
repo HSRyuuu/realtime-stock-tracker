@@ -21,6 +21,6 @@ class CandleController(
         @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") from: LocalDate?,
     ): List<CandleDto> {
 
-        return candleService.getCandles(symbol, timeframe, from ?: LocalDate.now().minusYears(3L));
+        return candleService.getCandles(symbol, timeframe, from ?: LocalDate.now().minusYears(5L));
     }
 }

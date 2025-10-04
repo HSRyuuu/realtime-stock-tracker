@@ -8,10 +8,14 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class CustomStockCandleRepository(
-    private val queryFactory: JPAQueryFactory
+    private val queryFactory: JPAQueryFactory,
+    private val stockCandleRepository: StockCandleRepository,
 ) {
 
     private val stockCandle = QStockCandle.stockCandle
+
+    fun saveAll(candles: List<StockCandle>): List<StockCandle> =
+        stockCandleRepository.saveAll(candles)
 
     /**
      * symbol + timeframe 조건으로 조회, bucketStartUtc 오름차순
@@ -30,5 +34,14 @@ class CustomStockCandleRepository(
             )
             .orderBy(stockCandle.bucketStartUtc.asc())
             .fetch()
+    }
+
+    fun findLatestCandle(symbol: String): StockCandle? {
+        return queryFactory.select(stockCandle)
+            .from(stockCandle)
+            .where(stockCandle.symbol.eq(symbol))
+            .orderBy(stockCandle.bucketStartUtc.desc())
+            .limit(1)
+            .fetchOne()
     }
 }

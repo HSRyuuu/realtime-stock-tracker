@@ -17,6 +17,7 @@ data class CandleDto(
     val close: BigDecimal,
     val volume: Long? = 0,
     val currency: CurrencyType? = null,
+    val updatedAt: LocalDateTime? = null,
 ) {
     companion object {
         fun fromEntity(stockCandle: StockCandle): CandleDto = CandleDto(
@@ -31,6 +32,7 @@ data class CandleDto(
             close = stockCandle.close,
             volume = stockCandle.volume,
             currency = stockCandle.currency,
+            updatedAt = stockCandle.updatedAt,
         )
 
         fun toEntity(symbol: String, timeframe: Timeframe, candleDto: CandleDto): StockCandle = StockCandle(
