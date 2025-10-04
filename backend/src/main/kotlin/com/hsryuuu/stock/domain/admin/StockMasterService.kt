@@ -1,7 +1,7 @@
 package com.hsryuuu.stock.domain.admin
 
 import com.hsryuuu.stock.domain.stock.model.type.StockType
-import com.hsryuuu.stock.infra.stockapi.provider.TwelveDataStockDataProvider
+import com.hsryuuu.stock.infra.stockapi.provider.stock.TwelveDataStockDataProvider
 import com.hsryuuu.stock.infra.stockapi.response.TwelveData
 import jakarta.persistence.EntityManager
 import org.springframework.stereotype.Service

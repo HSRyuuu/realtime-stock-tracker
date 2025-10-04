@@ -95,5 +95,11 @@ class TwelveData {
         }
     }
 
+    data class ExchangeRateResponse(
+        val symbol: String,
+        val rate: Double,
+        val timestamp: Long,
+    )
+
 
 }

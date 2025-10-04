@@ -20,6 +20,12 @@ interface TwelveDataFeignClient {
         @RequestParam format: String = "JSON",
     ): String
 
+    @GetMapping("/exchange_rate")
+    fun getExchangeRate(
+        @RequestParam symbol: String = "USD/KRW",
+        @RequestParam apikey: String = "demo",
+    ): String
+
     @GetMapping("/stocks")
     fun getStocks(
         @RequestParam apikey: String = "demo",

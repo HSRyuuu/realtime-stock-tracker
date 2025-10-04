@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.infra.stockapi.provider
+package com.hsryuuu.stock.infra.stockapi.provider.stock
 
 import com.hsryuuu.stock.application.dto.ProcessResult
 import com.hsryuuu.stock.domain.stock.model.dto.CandleResponse

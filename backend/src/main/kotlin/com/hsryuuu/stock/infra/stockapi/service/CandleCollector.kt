@@ -7,7 +7,7 @@ import com.hsryuuu.stock.domain.stock.model.dto.CandleDto
 import com.hsryuuu.stock.domain.stock.model.entity.StockCandle
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.repository.CustomStockCandleRepository
-import com.hsryuuu.stock.infra.stockapi.provider.TwelveDataStockDataProvider
+import com.hsryuuu.stock.infra.stockapi.provider.stock.TwelveDataStockDataProvider
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
