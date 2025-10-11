@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.infra.redis.limit
+package com.hsryuuu.stock.infra.redis.stockapi
 
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.StringRedisTemplate

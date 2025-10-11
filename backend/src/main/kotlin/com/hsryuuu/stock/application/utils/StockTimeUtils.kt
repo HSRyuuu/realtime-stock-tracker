@@ -1,11 +1,23 @@
 package com.hsryuuu.stock.application.utils
 
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 object StockTimeUtils {
     fun isMarketOpenNow(dateTime: LocalDateTime, zoneId: String): Boolean {
         return isTradingDay(dateTime, zoneId) && isTradingHours(dateTime, zoneId)
+    }
+
+    fun resolveReferenceDate(zoneId: String): LocalDate {
+        val referenceDateTime = LocalDateTime.now()
+            .plusDays(1L) // 다음 거래일 기준
+            .minusHours(1L) // 자정 보정
+        return if (isWeekendCloseTime(referenceDateTime, zoneId)) {
+            TimeUtils.getLastFriday(LocalDate.now())
+        } else {
+            TimeUtils.getYesterday(LocalDate.now())
+        }
     }
 
     fun isWeekendCloseTime(dateTime: LocalDateTime, zoneId: String): Boolean {

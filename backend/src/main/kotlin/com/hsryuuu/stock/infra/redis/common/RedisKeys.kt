@@ -1,18 +1,10 @@
 package com.hsryuuu.stock.infra.redis.common
 
 import com.hsryuuu.stock.domain.market.model.ExchangeRateDto
+import com.hsryuuu.stock.domain.stock.model.dto.SymbolStatus
 
 
 object RedisKeys {
-
-    // 환율 데이터
-    val FX_RATE = RedisKeySpec(
-        keyPattern = "fx:rate:%s:%s",
-        valueType = ExchangeRateDto::class.java,
-        ttlSeconds = 3600               // 1시간 캐시
-    )
-
-    fun exchangeRateKey(base: String, quote: String) = "fx:rate:$base:$quote"
 
     data class RedisKeySpec(
         val keyPattern: String,
@@ -27,4 +19,19 @@ object RedisKeys {
         }
         return spec.keyPattern.format(*args)
     }
+
+    // 환율 데이터
+    val FX_RATE = RedisKeySpec(
+        keyPattern = "fx:rate:%s:%s",
+        valueType = ExchangeRateDto::class.java,
+        ttlSeconds = 3600               // 1시간 캐시
+    )
+
+    val CANDLE_COLLECT_STATUS = RedisKeySpec(
+        keyPattern = "candle:status:%s:%s", // symbol / timeframe
+        valueType = SymbolStatus::class.java,
+        ttlSeconds = 600
+    )
+
+
 }

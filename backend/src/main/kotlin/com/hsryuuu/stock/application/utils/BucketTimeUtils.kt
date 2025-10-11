@@ -1,7 +1,6 @@
 package com.hsryuuu.stock.application.utils
 
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -45,19 +44,4 @@ object BucketTimeUtils {
 
         return floored.toInstant().toEpochMilli()
     }
-
-    // millis → UTC LocalDateTime
-    fun toUtcDateTime(millis: Long): LocalDateTime =
-        LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.of(TimeUtils.TIME_ZONE_UTC))
-
-    // millis → 특정 타임존 LocalDateTime
-    fun toLocalDateTime(millis: Long, zoneId: String): LocalDateTime =
-        LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.of(zoneId))
-
-    // millis → UTC LocalDate
-    fun toUtcDate(millis: Long): LocalDate =
-        toUtcDateTime(millis).toLocalDate()
-
-    fun toDateTimeByZone(millis: Long, zoneId: String): LocalDateTime =
-        LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.of(zoneId))
 }

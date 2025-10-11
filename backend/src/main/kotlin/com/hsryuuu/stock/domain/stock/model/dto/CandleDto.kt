@@ -1,7 +1,6 @@
 package com.hsryuuu.stock.domain.stock.model.dto
 
 import com.hsryuuu.stock.application.type.CurrencyType
-import com.hsryuuu.stock.application.utils.BucketTimeUtils
 import com.hsryuuu.stock.application.utils.TimeUtils
 import com.hsryuuu.stock.domain.stock.model.entity.StockCandle
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
@@ -21,7 +20,7 @@ data class CandleDto(
 ) {
     companion object {
         fun fromEntity(stockCandle: StockCandle): CandleDto = CandleDto(
-            datetime = BucketTimeUtils.toDateTimeByZone(
+            datetime = TimeUtils.toLocalDateTimeAt(
                 stockCandle.bucketStartUtc,
                 TimeUtils.TIME_ZONE_ASIA_SEOUL
             ),
@@ -39,7 +38,7 @@ data class CandleDto(
             symbol = symbol,
             timeframe = timeframe,
             bucketStartUtc = candleDto.time,
-            date = BucketTimeUtils.toUtcDate(candleDto.time),
+            date = TimeUtils.toLocalDateAt(candleDto.time, TimeUtils.TIME_ZONE_UTC),
             open = candleDto.open,
             high = candleDto.high,
             low = candleDto.low,

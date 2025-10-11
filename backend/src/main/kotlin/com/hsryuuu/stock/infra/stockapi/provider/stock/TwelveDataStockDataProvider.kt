@@ -6,7 +6,7 @@ import com.hsryuuu.stock.application.dto.ProcessResult
 import com.hsryuuu.stock.domain.stock.model.dto.CandleDto
 import com.hsryuuu.stock.domain.stock.model.dto.CandleResponse
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
-import com.hsryuuu.stock.infra.redis.limit.TwelveDataApiRateLimiter
+import com.hsryuuu.stock.infra.redis.stockapi.TwelveDataApiRateLimiter
 import com.hsryuuu.stock.infra.stockapi.api.TwelveDataFeignClient
 import com.hsryuuu.stock.infra.stockapi.log.TwelveDataLogHandler
 import com.hsryuuu.stock.infra.stockapi.param.ParameterConverter

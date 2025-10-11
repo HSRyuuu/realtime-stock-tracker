@@ -8,6 +8,7 @@ import com.hsryuuu.stock.domain.stock.repository.CustomStockSymbolRepository
 import com.hsryuuu.stock.infra.stockapi.service.CandleCollector
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @Service
@@ -15,7 +16,7 @@ class CandleService(
     private val stockSymbolRepository: CustomStockSymbolRepository,
     private val candleCollector: CandleCollector,
 ) {
-
+    @Transactional
     fun getCandles(symbol: String, timeframe: Timeframe, from: LocalDate): List<CandleDto> {
         validateSymbolExists(symbol)
         return candleCollector.getCandles(symbol, timeframe, from)

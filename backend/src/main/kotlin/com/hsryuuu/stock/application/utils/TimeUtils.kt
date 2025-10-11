@@ -34,8 +34,13 @@ object TimeUtils {
         return getZoneDateTime(dateTime, zoneId).toInstant().toEpochMilli()
     }
 
-    fun convertToLocalDateTime(epochMilli: Long, zoneId: String): LocalDateTime {
+    fun toLocalDateTimeAt(epochMilli: Long, zoneId: String): LocalDateTime {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMilli), ZoneId.of(zoneId))
     }
+
+    fun toLocalDateAt(epochMilli: Long, zoneId: String): LocalDate {
+        return toLocalDateTimeAt(epochMilli, zoneId).toLocalDate()
+    }
+
 
 }

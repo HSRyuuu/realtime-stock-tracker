@@ -44,4 +44,16 @@ class CustomStockCandleRepository(
             .limit(1)
             .fetchOne()
     }
+
+    fun findLatestCandle(symbol: String, timeframe: Timeframe): StockCandle? {
+        return queryFactory.select(stockCandle)
+            .from(stockCandle)
+            .where(
+                stockCandle.symbol.eq(symbol),
+                stockCandle.timeframe.eq(timeframe)
+            )
+            .orderBy(stockCandle.bucketStartUtc.desc())
+            .limit(1)
+            .fetchOne()
+    }
 }

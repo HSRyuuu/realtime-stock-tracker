@@ -2,21 +2,21 @@ package com.hsryuuu.stock.domain.market.service
 
 import com.hsryuuu.stock.application.utils.TimeUtils
 import com.hsryuuu.stock.domain.market.model.ExchangeRateDto
-import com.hsryuuu.stock.infra.stockapi.provider.market.TwelveDataMarketDataProvider
 import com.hsryuuu.stock.infra.redis.common.RedisKeys
 import com.hsryuuu.stock.infra.redis.common.StringRedisUtils
+import com.hsryuuu.stock.infra.stockapi.provider.market.TwelveDataMarketDataProvider
 import org.springframework.stereotype.Service
 
 @Service
 class ExchangeService(
-    private val stringRedisUtils: StringRedisUtils,
+    private val redisUtils: StringRedisUtils,
     private val twelveDataMarketDataProvider: TwelveDataMarketDataProvider
 ) {
 
     fun getCurrentExchangeRate(base: String, quote: String): ExchangeRateDto {
         val key = RedisKeys.buildKey(RedisKeys.FX_RATE, base, quote)
 
-        stringRedisUtils.getObject(key, RedisKeys.FX_RATE.valueType)?.let {
+        redisUtils.getObject(key, RedisKeys.FX_RATE.valueType)?.let {
             return it as ExchangeRateDto
         }
 
@@ -24,7 +24,7 @@ class ExchangeService(
         val exchangeRateResponse = fetchResult.data ?: throw Exception("Fetch failed")
 
         val localDateTime =
-            TimeUtils.convertToLocalDateTime(exchangeRateResponse.timestamp, TimeUtils.TIME_ZONE_ASIA_SEOUL)
+            TimeUtils.toLocalDateTimeAt(exchangeRateResponse.timestamp, TimeUtils.TIME_ZONE_ASIA_SEOUL)
 
         return ExchangeRateDto(
             baseCurrency = base,

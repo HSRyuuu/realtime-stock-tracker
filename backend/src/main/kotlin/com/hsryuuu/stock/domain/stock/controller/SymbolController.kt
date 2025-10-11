@@ -2,6 +2,8 @@ package com.hsryuuu.stock.domain.stock.controller
 
 import com.hsryuuu.stock.domain.stock.model.dto.StockPriceInfo
 import com.hsryuuu.stock.domain.stock.model.dto.StockSymbolDto
+import com.hsryuuu.stock.domain.stock.model.dto.SymbolStatus
+import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.service.SymbolService
 import org.springframework.web.bind.annotation.*
 
@@ -29,5 +31,13 @@ class SymbolController(
         @PathVariable symbol: String,
     ): StockPriceInfo = symbolService.getCurrentPrice(symbol)
 
+
+    @GetMapping("/{symbol}/status")
+    fun getCandleCollectStatus(
+        @PathVariable symbol: String,
+        @RequestParam(required = false, defaultValue = "DAY1") tf: Timeframe = Timeframe.DAY1
+    ): SymbolStatus {
+        return symbolService.getCollectStatus(symbol, tf);
+    }
 
 }

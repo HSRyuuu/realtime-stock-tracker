@@ -3,6 +3,7 @@ package com.hsryuuu.stock.infra.stockapi.response
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.hsryuuu.stock.application.type.CurrencyType
 import com.hsryuuu.stock.application.utils.BucketTimeUtils
+import com.hsryuuu.stock.application.utils.TimeUtils
 import com.hsryuuu.stock.domain.stock.model.dto.CandleDto
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import java.math.BigDecimal
@@ -57,7 +58,7 @@ class TwelveData {
                     timeframe = timeframe
                 )
                 return CandleDto(
-                    datetime = BucketTimeUtils.toUtcDateTime(bucketStartUtcMillis),
+                    datetime = TimeUtils.toLocalDateTimeAt(bucketStartUtcMillis, TimeUtils.TIME_ZONE_UTC),
                     time = bucketStartUtcMillis,
                     open = open,
                     high = high,
