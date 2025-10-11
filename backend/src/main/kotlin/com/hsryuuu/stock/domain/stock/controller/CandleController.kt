@@ -1,6 +1,7 @@
 package com.hsryuuu.stock.domain.stock.controller
 
 import com.hsryuuu.stock.domain.stock.model.dto.CandleDto
+import com.hsryuuu.stock.domain.stock.model.dto.SymbolStatus
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.service.CandleService
 import org.springframework.format.annotation.DateTimeFormat
@@ -14,6 +15,14 @@ class CandleController(
     private val candleService: CandleService
 ) {
 
+    @GetMapping("/{symbol}/status")
+    fun getCandleCollectStatus(
+        @PathVariable symbol: String,
+        @RequestParam(required = false, defaultValue = "DAY1") tf: Timeframe = Timeframe.DAY1
+    ): SymbolStatus {
+        return candleService.getCollectStatus(symbol, tf);
+    }
+
     @GetMapping("/{symbol}")
     fun getCandles(
         @PathVariable symbol: String,
@@ -23,4 +32,5 @@ class CandleController(
 
         return candleService.getCandles(symbol, timeframe, from ?: LocalDate.now().minusYears(5L));
     }
+
 }
