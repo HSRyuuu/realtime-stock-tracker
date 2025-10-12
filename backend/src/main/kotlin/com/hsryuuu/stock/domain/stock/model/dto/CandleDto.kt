@@ -5,11 +5,13 @@ import com.hsryuuu.stock.application.utils.TimeUtils
 import com.hsryuuu.stock.domain.stock.model.entity.StockCandle
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class CandleDto(
     val datetime: LocalDateTime,
     val time: Long,   // Unix timestamp (seconds)
+    val date: LocalDate,
     val open: BigDecimal,
     val high: BigDecimal,
     val low: BigDecimal,
@@ -24,6 +26,7 @@ data class CandleDto(
                 stockCandle.bucketStartUtc,
                 TimeUtils.TIME_ZONE_ASIA_SEOUL
             ),
+            date = stockCandle.date,
             time = stockCandle.bucketStartUtc,
             open = stockCandle.open,
             high = stockCandle.high,

@@ -3,9 +3,10 @@ package com.hsryuuu.stock.domain.stock.controller
 import com.hsryuuu.stock.domain.stock.model.dto.StockPriceInfo
 import com.hsryuuu.stock.domain.stock.model.dto.StockSymbolDto
 import com.hsryuuu.stock.domain.stock.service.SymbolService
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 
-
+@Tag(name = "종목(symbol) API")
 @RequestMapping("/api/stock/symbols")
 @RestController
 class SymbolController(

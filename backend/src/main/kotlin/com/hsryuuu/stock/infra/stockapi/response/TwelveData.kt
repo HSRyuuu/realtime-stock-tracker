@@ -44,7 +44,6 @@ class TwelveData {
         companion object {
 
             fun toCandleDto(meta: Meta, value: Value, timeframe: Timeframe): CandleDto {
-                // 1. 문자열 → BigDecimal/Long 변환 (안전하게)
                 val open = value.open.toBigDecimalOrNull() ?: BigDecimal.ZERO
                 val high = value.high.toBigDecimalOrNull() ?: BigDecimal.ZERO
                 val low = value.low.toBigDecimalOrNull() ?: BigDecimal.ZERO
@@ -60,6 +59,7 @@ class TwelveData {
                 return CandleDto(
                     datetime = TimeUtils.toLocalDateTimeAt(bucketStartUtcMillis, TimeUtils.TIME_ZONE_UTC),
                     time = bucketStartUtcMillis,
+                    date = TimeUtils.toLocalDateAt(bucketStartUtcMillis, TimeUtils.TIME_ZONE_UTC),
                     open = open,
                     high = high,
                     low = low,

@@ -5,6 +5,7 @@ import com.hsryuuu.stock.domain.stock.model.type.CandleCollectState
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.infra.redis.common.RedisKeys
 import com.hsryuuu.stock.infra.redis.common.StringRedisUtils
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.Duration
 
@@ -12,9 +13,12 @@ import java.time.Duration
 class CandleStatusService(
     private val redisUtils: StringRedisUtils
 ) {
+    private val log = LoggerFactory.getLogger(CandleStatusService::class.java)
+
     private val ttl = Duration.ofSeconds(RedisKeys.CANDLE_COLLECT_STATUS.ttlSeconds)
 
     fun get(symbol: String, timeframe: Timeframe): SymbolStatus? {
+        log.info("get: symbol=$symbol, timeframe=$timeframe")
         return redisUtils.getObject(
             RedisKeys.buildKey(RedisKeys.CANDLE_COLLECT_STATUS, symbol, timeframe.name),
             SymbolStatus::class.java
