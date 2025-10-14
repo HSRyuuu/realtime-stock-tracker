@@ -1,58 +1,58 @@
 package com.hsryuuu.stock.application.utils
 
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.*
 
 object StockTimeUtils {
-    fun isMarketOpenNow(dateTime: LocalDateTime, zoneId: String): Boolean {
-        return isTradingDay(dateTime, zoneId) && isTradingHours(dateTime, zoneId)
+    fun isMarketOpenNow(zoneId: String): Boolean {
+        val nowInZone = ZonedDateTime.now(ZoneId.of(zoneId))
+        return isTradingDay(nowInZone) && isTradingHours(nowInZone)
     }
 
-    fun resolveReferenceDate(zoneId: String): LocalDate {
-        val referenceDateTime = LocalDateTime.now()
-            .plusDays(1L) // 다음 거래일 기준
-            .minusHours(1L) // 자정 보정
-        return if (isWeekendCloseTime(referenceDateTime, zoneId)) {
-            TimeUtils.getLastFriday(LocalDate.now())
+    fun resolveLastMarketOpenDate(zoneId: String): LocalDate {
+        val nowInZone = ZonedDateTime.now(ZoneId.of(zoneId))
+        return if (isWeekendCloseTime(nowInZone.toLocalDateTime(), zoneId) || isMonday(nowInZone)) {
+            TimeUtils.getLastFriday(nowInZone.toLocalDate())
         } else {
-            TimeUtils.getYesterday(LocalDate.now())
+            TimeUtils.getYesterday(nowInZone.toLocalDate())
         }
     }
 
-    fun isWeekendCloseTime(dateTime: LocalDateTime, zoneId: String): Boolean {
-        val targetZoneDateTime = TimeUtils.getZoneDateTime(dateTime, zoneId)
+    private fun isMonday(zonedDateTime: ZonedDateTime): Boolean =
+        zonedDateTime.dayOfWeek == DayOfWeek.MONDAY
+
+    private fun isWeekendCloseTime(dateTime: LocalDateTime, zoneId: String): Boolean {
         val tradingStartTime = MarketInfoUtils.getTradingStartTime(zoneId)
         val tradingEndTime = MarketInfoUtils.getTradingEndTime(zoneId)
-        val dayOfWeek = targetZoneDateTime.dayOfWeek
-        val localTime = targetZoneDateTime.toLocalTime()
+        val dayOfWeek = dateTime.dayOfWeek
+        val localTime = dateTime.toLocalTime()
 
         return when {
+            // 금요일 장 마감 이후
+            dayOfWeek == DayOfWeek.FRIDAY && !localTime.isBefore(tradingEndTime) -> true
             // 토/일 전체
             dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY -> true
-            // 금요일 장 마감 이후
-            dayOfWeek == DayOfWeek.FRIDAY && localTime.isAfter(tradingEndTime) -> true
             // 월요일 장 시작 전
-            dayOfWeek == DayOfWeek.MONDAY && localTime.isBefore(tradingStartTime) -> true
+            dayOfWeek == DayOfWeek.MONDAY && !localTime.isAfter(tradingStartTime) -> true
             else -> false
         }
     }
 
-    private fun isTradingHours(dateTime: LocalDateTime, zoneId: String): Boolean {
-        val targetZoneDateTime = TimeUtils.getZoneDateTime(dateTime, zoneId)
-
-        val tradingStartTime = MarketInfoUtils.getTradingStartTime(zoneId)
-        val tradingEndTime = MarketInfoUtils.getTradingEndTime(zoneId)
-
-        val time = targetZoneDateTime.toLocalTime()
-        return time.isAfter(tradingStartTime) && time.isBefore(tradingEndTime)
+    private fun isTradingHours(zonedDateTime: ZonedDateTime): Boolean {
+        val time = zonedDateTime.toLocalTime()
+        val tradingStartTime = MarketInfoUtils.getTradingStartTime(zonedDateTime.zone.id)
+        val tradingEndTime = MarketInfoUtils.getTradingEndTime(zonedDateTime.zone.id)
+        return !time.isBefore(tradingStartTime) && !time.isAfter(tradingEndTime)
     }
 
-    private fun isTradingDay(dateTime: LocalDateTime, zoneId: String): Boolean {
-        val targetZoneDateTime = TimeUtils.getZoneDateTime(dateTime, zoneId)
-        val dayOfWeek = targetZoneDateTime.dayOfWeek
+    private fun isTradingDay(zonedDateTime: ZonedDateTime): Boolean {
+        val dayOfWeek = zonedDateTime.dayOfWeek
         return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY
     }
 
 
+}
+
+fun main() {
+    val resolveReferenceDate = StockTimeUtils.resolveLastMarketOpenDate(TimeUtils.TIME_ZONE_AMERICA_NEW_YORK)
+    println(resolveReferenceDate)
 }
