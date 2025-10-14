@@ -43,7 +43,8 @@ class TwelveDataStockDataProvider(
         if (!checkRateLimit().success) {
             return ProcessResult.fail();
         }
-        val paramMap = mapOf("symbol" to symbol, "timeframe" to timeframe.name) // 로그용
+        val paramMap =
+            mapOf("symbol" to symbol, "timeframe" to timeframe.name, "startDate" to startDate.toString()) // 로그용
         var rawJson: String? = null // response JSON String
 
         return try {

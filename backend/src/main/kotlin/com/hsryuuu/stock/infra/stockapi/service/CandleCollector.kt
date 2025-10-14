@@ -35,7 +35,7 @@ class CandleCollector(
                 }
 
                 latestCandle.date.isBefore(referenceDate) -> {
-                    val result = collectCandles(symbol, timeframe, latestCandle.date.plusDays(1L))
+                    val result = collectCandles(symbol, timeframe, latestCandle.date.minusDays(1L))
                     saveCandles(symbol, timeframe, result)
                 }
 
