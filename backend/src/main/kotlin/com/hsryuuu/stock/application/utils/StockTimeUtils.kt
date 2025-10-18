@@ -10,8 +10,14 @@ object StockTimeUtils {
 
     fun resolveLastMarketOpenDate(zoneId: String): LocalDate {
         val nowInZone = ZonedDateTime.now(ZoneId.of(zoneId))
-        return if (isWeekendCloseTime(nowInZone.toLocalDateTime(), zoneId) || isMonday(nowInZone)) {
-            TimeUtils.getLastFriday(nowInZone.toLocalDate())
+        println(nowInZone)
+
+        return if (isWeekendCloseTime(nowInZone.toLocalDateTime(), zoneId)) {
+            if (isMonday(nowInZone)) {
+                TimeUtils.getLastFriday(nowInZone.toLocalDate())
+            } else {
+                TimeUtils.getThisFriday(nowInZone.toLocalDate())
+            }
         } else {
             TimeUtils.getYesterday(nowInZone.toLocalDate())
         }

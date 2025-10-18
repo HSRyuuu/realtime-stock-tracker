@@ -1,10 +1,9 @@
 package com.hsryuuu.stock.infra.stockapi.service
 
-import com.hsryuuu.stock.application.dto.ProcessResult
 import com.hsryuuu.stock.application.utils.StockTimeUtils
+import com.hsryuuu.stock.application.utils.TimeUtils
 import com.hsryuuu.stock.application.utils.TimeUtils.TIME_ZONE_AMERICA_NEW_YORK
 import com.hsryuuu.stock.domain.stock.model.dto.CandleDto
-import com.hsryuuu.stock.domain.stock.model.dto.CandleResponse
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.repository.CustomStockCandleRepository
 import com.hsryuuu.stock.infra.stockapi.provider.stock.TwelveDataStockDataProvider
@@ -25,18 +24,16 @@ class CandleCollector(
     fun collectAndSaveCandles(symbol: String, timeframe: Timeframe) {
         try {
             val referenceDate =
-                StockTimeUtils.resolveReferenceDate(TIME_ZONE_AMERICA_NEW_YORK) // 마지막 장 open 날짜 (zone 은 일단 하드코딩)
+                StockTimeUtils.resolveLastMarketOpenDate(TIME_ZONE_AMERICA_NEW_YORK) // 마지막 장 open 날짜 (zone 은 일단 하드코딩)
             // 일봉 / 분봉 상관없이 최신 데이터
             val latestCandle = candleRepository.findLatestCandle(symbol)
-            when {
+            val collectResult = when {
                 latestCandle == null -> {
-                    val result = collectCandles(symbol, timeframe)
-                    saveCandles(symbol, timeframe, result)
+                    stockDataProvider.getTimeSeries(symbol, timeframe, LocalDate.now().minusYears(20L))
                 }
 
-                latestCandle.date.isBefore(referenceDate) -> {
-                    val result = collectCandles(symbol, timeframe, latestCandle.date.minusDays(1L))
-                    saveCandles(symbol, timeframe, result)
+                !latestCandle.date.isAfter(referenceDate) -> {
+                    stockDataProvider.getTimeSeries(symbol, timeframe, latestCandle.date.minusDays(1L))
                 }
 
                 else -> {
@@ -44,6 +41,16 @@ class CandleCollector(
                     return
                 }
             }
+
+            if (!collectResult.success || collectResult.data == null) {
+                log.info("❌Collected Candle is empty")
+                return
+            }
+
+
+            saveCandles(symbol, timeframe, collectResult.data.candles)
+
+
         } catch (e: Exception) {
             log.error("❌ Candle data collection failed for symbol={}, error={}", symbol, e.message, e)
             throw e
@@ -51,18 +58,10 @@ class CandleCollector(
 
     }
 
-    private fun collectCandles(
-        symbol: String,
-        timeframe: Timeframe,
-        collectStartDate: LocalDate = LocalDate.now().minusYears(20L)
-    ): ProcessResult<CandleResponse> = stockDataProvider.getTimeSeries(symbol, timeframe, collectStartDate)
 
-    private fun saveCandles(symbol: String, timeframe: Timeframe, collectResult: ProcessResult<CandleResponse>) {
-        if (!collectResult.success || collectResult.data == null) {
-            log.info("❌Collected Candle is empty")
-            return
-        }
-        candleRepository.saveAll(collectResult.data.candles.map {
+    private fun saveCandles(symbol: String, timeframe: Timeframe, candles: List<CandleDto>) {
+        val filtered = candles.filterNot { TimeUtils.isTodayInUs(it.date) }
+        candleRepository.saveAll(filtered.map {
             CandleDto.toEntity(
                 symbol,
                 timeframe,
