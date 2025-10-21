@@ -22,4 +22,15 @@ class IndicatorCalcEventConsumer(
         log.info("✅볼린저밴드 계산 완료: size: ${bollingerBands.size}")
     }
 
+    @KafkaListener(
+        topics = ["rsi-calc-topic"],
+        groupId = "rsi-calc"
+    )
+    fun calcRSI(event: RSICalculateEvent) {
+        log.info("📩[Kafka] RSI 계산 CONSUME: symbol={}, timeframe={}", event.symbol, event.timeframe)
+        val rsiList =
+            indicatorCalculator.calcRSI(event.symbol, event.timeframe, event.period)
+        log.info("✅RSI 계산 완료: size: ${rsiList.size}")
+    }
+
 }

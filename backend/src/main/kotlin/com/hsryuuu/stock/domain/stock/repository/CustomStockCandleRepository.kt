@@ -1,9 +1,6 @@
 package com.hsryuuu.stock.domain.stock.repository
 
-import com.hsryuuu.stock.domain.stock.model.entity.BollingerBand
-import com.hsryuuu.stock.domain.stock.model.entity.QBollingerBand
-import com.hsryuuu.stock.domain.stock.model.entity.QStockCandle
-import com.hsryuuu.stock.domain.stock.model.entity.StockCandle
+import com.hsryuuu.stock.domain.stock.model.entity.*
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -15,10 +12,12 @@ class CustomStockCandleRepository(
     private val queryFactory: JPAQueryFactory,
     private val stockCandleRepository: StockCandleRepository,
     private val bollingerBandRepository: BollingerBandRepository,
+    private val stockRsiRepository: StockRsiRepository,
 ) {
 
     private val stockCandle = QStockCandle.stockCandle
     private val bollingerBand = QBollingerBand.bollingerBand
+    private val rsi = QStockRsi.stockRsi
 
     fun saveAllCandles(candles: List<StockCandle>): List<StockCandle> =
         stockCandleRepository.saveAll(candles)
@@ -26,6 +25,9 @@ class CustomStockCandleRepository(
 
     fun saveAllBollingerBands(bollingerBands: List<BollingerBand>): List<BollingerBand> =
         bollingerBandRepository.saveAll(bollingerBands)
+
+    fun saveAllRsi(rsiList: List<StockRsi>): List<StockRsi> =
+        stockRsiRepository.saveAll(rsiList)
 
     /**
      * symbol + timeframe 조건으로 조회, bucketStartUtc 오름차순
@@ -73,7 +75,15 @@ class CustomStockCandleRepository(
             .fetchFirst()
     }
 
-    fun findCandlesForBollingerBands(
+    fun findLatestRSI(symbol: String, timeframe: Timeframe): StockRsi? {
+        val findCond = getRSISymbolAndTimeframeCondition(symbol, timeframe)
+        return queryFactory.selectFrom(rsi)
+            .where(findCond)
+            .orderBy(rsi.date.desc())
+            .fetchFirst()
+    }
+
+    fun findCandlesToCalcIndicators(
         symbol: String,
         timeframe: Timeframe,
         date: LocalDate,
@@ -117,6 +127,15 @@ class CustomStockCandleRepository(
             .fetchFirst()
     }
 
+    fun findLatestRSIDate(symbol: String, timeframe: Timeframe): LocalDate? {
+        val findCond = getRSISymbolAndTimeframeCondition(symbol, timeframe)
+        return queryFactory.select(rsi.date)
+            .from(rsi)
+            .where(findCond)
+            .orderBy(rsi.date.desc())
+            .fetchFirst()
+    }
+
 
     private fun getCandleSymbolAndTimeframeCondition(symbol: String, timeframe: Timeframe): BooleanExpression {
         return stockCandle.symbol.eq(symbol)
@@ -126,5 +145,10 @@ class CustomStockCandleRepository(
     private fun getBollingerBandSymbolAndTimeframeCondition(symbol: String, timeframe: Timeframe): BooleanExpression {
         return bollingerBand.symbol.eq(symbol)
             .and(bollingerBand.timeframe.eq(timeframe))
+    }
+
+    private fun getRSISymbolAndTimeframeCondition(symbol: String, timeframe: Timeframe): BooleanExpression {
+        return rsi.symbol.eq(symbol)
+            .and(rsi.timeframe.eq(timeframe))
     }
 }

@@ -33,6 +33,18 @@ class CandleEventProducer(
             symbol, timeframe, period, kValue
         )
     }
+
+    /**
+     * RSI 계산 이벤트 발행
+     */
+    fun sendRSICalculateEvent(symbol: String, timeframe: Timeframe, period: Int = 14) {
+        val event = RSICalculateEvent(symbol, timeframe, period)
+        kafkaTemplate.send("rsi-calc-topic", event)
+        log.info(
+            "📤 [Kafka] BRSICalculateEvent 발행: symbol={}, timeframe={}, period={}",
+            symbol, timeframe, period
+        )
+    }
 }
 
 data class CandleCollectEvent(
@@ -46,5 +58,12 @@ data class BollingerBandCalculateEvent(
     val timeframe: Timeframe,
     val period: Int = 20,
     val kValue: Double = 2.0,
+    val requestedAt: LocalDateTime = LocalDateTime.now()
+)
+
+data class RSICalculateEvent(
+    val symbol: String,
+    val timeframe: Timeframe,
+    val period: Int = 14,
     val requestedAt: LocalDateTime = LocalDateTime.now()
 )
