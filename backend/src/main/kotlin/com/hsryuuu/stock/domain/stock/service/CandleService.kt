@@ -22,7 +22,7 @@ import java.time.LocalDate
 class CandleService(
     private val stockSymbolRepository: CustomStockSymbolRepository,
     private val candleRepository: CustomStockCandleRepository,
-    private val candleStatusService: CandleStatusService,
+    private val candleStatusManager: CandleStatusManager,
     private val candleEventProducer: CandleEventProducer
 ) {
 
@@ -31,7 +31,7 @@ class CandleService(
     @Transactional(readOnly = true)
     fun getCollectStatus(symbol: String, timeframe: Timeframe): SymbolStatus {
         // redis 에 수집 상태 정보가 있는 경우
-        val existingStatus = candleStatusService.get(symbol, Timeframe.DAY1)
+        val existingStatus = candleStatusManager.get(symbol, Timeframe.DAY1)
 
         if (existingStatus != null && existingStatus.state in listOf(
                 CandleCollectState.RUNNING,
@@ -62,7 +62,7 @@ class CandleService(
             }
 
             else -> {
-                candleStatusService.setSuccess(symbol, Timeframe.DAY1)
+                candleStatusManager.setSuccess(symbol, Timeframe.DAY1)
                 SymbolStatus(symbol, true, CandleCollectState.SUCCESS, "수집 완료 상태입니다.")
             }
         }
@@ -71,7 +71,7 @@ class CandleService(
     }
 
     private fun createCollectCandleEvent(symbol: String, timeframe: Timeframe = Timeframe.DAY1) {
-        candleStatusService.setPending(symbol, timeframe)
+        candleStatusManager.setPending(symbol, timeframe)
         candleEventProducer.sendCandleCollectEvent(symbol, timeframe)
         log.info("✅수집 이벤트 발행 완료: symbol=$symbol, timeframe=$timeframe")
     }

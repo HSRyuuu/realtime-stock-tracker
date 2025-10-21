@@ -6,14 +6,14 @@ import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.infra.redis.common.RedisKeys
 import com.hsryuuu.stock.infra.redis.common.StringRedisUtils
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import java.time.Duration
 
-@Service
-class CandleStatusService(
+@Component
+class CandleStatusManager(
     private val redisUtils: StringRedisUtils
 ) {
-    private val log = LoggerFactory.getLogger(CandleStatusService::class.java)
+    private val log = LoggerFactory.getLogger(CandleStatusManager::class.java)
 
     private val ttl = Duration.ofSeconds(RedisKeys.CANDLE_COLLECT_STATUS.ttlSeconds)
 

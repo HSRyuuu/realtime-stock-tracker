@@ -1,6 +1,6 @@
 package com.hsryuuu.stock.domain.stock.event
 
-import com.hsryuuu.stock.domain.stock.service.CandleStatusService
+import com.hsryuuu.stock.domain.stock.service.CandleStatusManager
 import com.hsryuuu.stock.infra.stockapi.service.CandleCollector
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class CandleCollectEventConsumer(
     private val candleCollector: CandleCollector,
-    private val candleStatusService: CandleStatusService,
+    private val candleStatusManager: CandleStatusManager,
 ) {
 
     private val log = LoggerFactory.getLogger(CandleCollectEventConsumer::class.java)
@@ -29,14 +29,14 @@ class CandleCollectEventConsumer(
         log.info("📩[Kafka] 캔들 수집 이벤트 CONSUME: symbol={}, timeframe={}", event.symbol, event.timeframe)
         try {
             // 상태: RUNNING
-            candleStatusService.setRunning(event.symbol, event.timeframe)
+            candleStatusManager.setRunning(event.symbol, event.timeframe)
 
             // 실제 수집 로직 실행 (외부 API 조회 + DB 저장)
             candleCollector.collectAndSaveCandles(event.symbol, event.timeframe)
 
             // 상태: SUCCESS
             log.info("✅ 캔들 데이터 수집 완료: symbol={}, timeframe={}", event.symbol, event.timeframe)
-            candleStatusService.setSuccess(event.symbol, event.timeframe)
+            candleStatusManager.setSuccess(event.symbol, event.timeframe)
 
         } catch (e: Exception) {
             log.error(
@@ -44,7 +44,7 @@ class CandleCollectEventConsumer(
                 event.symbol, event.timeframe, e.message, e
             )
             // 상태: FAILED
-            candleStatusService.setFailed(event.symbol, event.timeframe, e.message.toString())
+            candleStatusManager.setFailed(event.symbol, event.timeframe, e.message.toString())
 
             throw e
         }
