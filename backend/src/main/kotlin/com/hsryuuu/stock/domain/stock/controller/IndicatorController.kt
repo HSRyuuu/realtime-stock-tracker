@@ -1,12 +1,11 @@
 package com.hsryuuu.stock.domain.stock.controller
 
 import com.hsryuuu.stock.domain.stock.event.CandleEventProducer
+import com.hsryuuu.stock.domain.stock.model.dto.BollingerBandSignal
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.service.IndicatorService
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDate
 
 @Tag(name = "기술적 지표 API")
 @RequestMapping("/api/stock/indicators")
@@ -16,14 +15,11 @@ class IndicatorController(
     private val candleEventProducer: CandleEventProducer
 ) {
 
-    @GetMapping("/bollinger-bands")
-    fun getBollingerBands(
-        @RequestParam symbol: String,
-        @RequestParam(name = "tf", defaultValue = "DAY1") timeframe: Timeframe,
-        @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") from: LocalDate?,
-    ) {
-        indicatorService.getBollingerBands(symbol, timeframe, from ?: LocalDate.now().minusYears(20L))
+    @GetMapping("/bollinger-bands/{symbol}")
+    fun getBollingerBand(@PathVariable symbol: String): BollingerBandSignal {
+        return indicatorService.getBollingerBandSignal(symbol)
     }
+
 
     @PostMapping("/test-bb")
     fun test(

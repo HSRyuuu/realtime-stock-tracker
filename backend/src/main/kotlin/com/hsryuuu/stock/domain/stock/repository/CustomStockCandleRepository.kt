@@ -62,7 +62,15 @@ class CustomStockCandleRepository(
             .where(findCond)
             .orderBy(stockCandle.bucketStartUtc.desc())
             .limit(1)
-            .fetchOne()
+            .fetchFirst()
+    }
+
+    fun findLatestBollingerBand(symbol: String, timeframe: Timeframe): BollingerBand? {
+        val findCond = getBollingerBandSymbolAndTimeframeCondition(symbol, timeframe)
+        return queryFactory.selectFrom(bollingerBand)
+            .where(findCond)
+            .orderBy(bollingerBand.date.desc())
+            .fetchFirst()
     }
 
     fun findCandlesForBollingerBands(

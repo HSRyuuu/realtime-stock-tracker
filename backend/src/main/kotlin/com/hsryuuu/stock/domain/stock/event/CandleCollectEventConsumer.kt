@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 class CandleCollectEventConsumer(
     private val candleCollector: CandleCollector,
     private val candleStatusManager: CandleStatusManager,
+    private val indicatorCalcEventConsumer: IndicatorCalcEventConsumer
 ) {
 
     private val log = LoggerFactory.getLogger(CandleCollectEventConsumer::class.java)
@@ -37,6 +38,9 @@ class CandleCollectEventConsumer(
             // 상태: SUCCESS
             log.info("✅ 캔들 데이터 수집 완료: symbol={}, timeframe={}", event.symbol, event.timeframe)
             candleStatusManager.setSuccess(event.symbol, event.timeframe)
+
+            // 볼린저밴드 계산
+            indicatorCalcEventConsumer.calcBollingerBand(BollingerBandCalculateEvent(event.symbol, event.timeframe))
 
         } catch (e: Exception) {
             log.error(
