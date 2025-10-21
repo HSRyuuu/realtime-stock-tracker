@@ -21,6 +21,10 @@ class MemberService(
         return memberRepository.existsByNickname(nickname)
     }
 
+    fun existsByEmail(email: String): Boolean {
+        return memberRepository.existsByEmail(email)
+    }
+
     @Transactional
     fun signup(request: MemberSignupRequest): Long {
         // 중복 체크
@@ -31,6 +35,11 @@ class MemberService(
             throw IllegalArgumentException("이미 사용중인 닉네임입니다.")
         }
 
+        if (existsByEmail(request.email)) {
+            throw IllegalArgumentException("이미 사용중인 이메일입니다.")
+        }
+
+
         // 비밀번호 암호화
         val encodedPassword = passwordEncoder.encode(request.password)
 
@@ -39,7 +48,7 @@ class MemberService(
             username = request.username,
             password = encodedPassword,
             nickname = request.nickname,
-            phoneNumber = request.phoneNumber
+            email = request.email
         )
 
         val savedMember = memberRepository.save(member)

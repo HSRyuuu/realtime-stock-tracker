@@ -7,5 +7,6 @@ data class DuplicateCheckResponse(
 data class SignupResponse(
     val id: Long,
     val username: String,
-    val nickname: String
+    val nickname: String,
+    val email: String
 )

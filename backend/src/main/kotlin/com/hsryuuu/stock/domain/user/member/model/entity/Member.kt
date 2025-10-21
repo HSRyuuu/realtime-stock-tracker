@@ -23,8 +23,8 @@ data class Member(
     @Column(nullable = false, unique = true, length = 50)
     val nickname: String,
 
-    @Column(name = "phone_number", nullable = false, length = 20)
-    val phoneNumber: String,
+    @Column(nullable = false, unique = true, length = 100)
+    val email: String,
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -33,4 +33,6 @@ data class Member(
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now(),
-)
+
+
+    )

@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface MemberRepository : JpaRepository<Member, Long> {
     fun existsByUsername(username: String): Boolean
     fun existsByNickname(nickname: String): Boolean
+    fun existsByEmail(email: String): Boolean
 }

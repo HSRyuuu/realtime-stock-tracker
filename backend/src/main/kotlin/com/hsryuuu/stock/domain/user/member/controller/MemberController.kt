@@ -26,13 +26,20 @@ class MemberController(
         return DuplicateCheckResponse(exists)
     }
 
+    @GetMapping("/check/email")
+    fun checkEmailExists(@RequestParam email: String): DuplicateCheckResponse {
+        val exists = memberService.existsByEmail(email)
+        return DuplicateCheckResponse(exists)
+    }
+
     @PostMapping("/signup")
     fun signup(@Valid @RequestBody request: MemberSignupRequest): SignupResponse {
         val memberId = memberService.signup(request)
         return SignupResponse(
             id = memberId,
             username = request.username,
-            nickname = request.nickname
+            nickname = request.nickname,
+            email = request.email
         )
     }
 
