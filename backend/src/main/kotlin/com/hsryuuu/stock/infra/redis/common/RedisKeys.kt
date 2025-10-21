@@ -27,11 +27,18 @@ object RedisKeys {
         ttlSeconds = 3600               // 1시간 캐시
     )
 
+    // 캔들 수집 상태
     val CANDLE_COLLECT_STATUS = RedisKeySpec(
         keyPattern = "candle:status:%s:%s", // symbol / timeframe
         valueType = SymbolStatus::class.java,
         ttlSeconds = 600
     )
 
+    // 주식 현재가
+    val CURRENT_STOCK_PRICE = RedisKeySpec(
+        keyPattern = "stock:price:%s:date:%s",
+        valueType = Double::class.java,
+        ttlSeconds = 60 * 60 * 24
+    )
 
 }

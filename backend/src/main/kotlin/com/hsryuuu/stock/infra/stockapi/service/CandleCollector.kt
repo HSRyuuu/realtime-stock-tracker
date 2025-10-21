@@ -61,7 +61,7 @@ class CandleCollector(
 
     private fun saveCandles(symbol: String, timeframe: Timeframe, candles: List<CandleDto>) {
         val filtered = candles.filterNot { TimeUtils.isTodayInUs(it.date) }
-        candleRepository.saveAll(filtered.map {
+        candleRepository.saveAllCandles(filtered.map {
             CandleDto.toEntity(
                 symbol,
                 timeframe,

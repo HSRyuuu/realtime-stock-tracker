@@ -43,7 +43,7 @@ class CandleService(
 
         // 수집 상태가 없는 경우 수집 상태 확인
         val findLatestCandle = candleRepository.findLatestCandle(symbol, Timeframe.DAY1)
-        val marketRefDate = StockTimeUtils.resolveReferenceDate(TIME_ZONE_AMERICA_NEW_YORK)
+        val marketRefDate = StockTimeUtils.resolveLastMarketOpenDate(TIME_ZONE_AMERICA_NEW_YORK)
 
         val symbolStatus = when {
             findLatestCandle == null -> {
@@ -66,7 +66,7 @@ class CandleService(
                 SymbolStatus(symbol, true, CandleCollectState.SUCCESS, "수집 완료 상태입니다.")
             }
         }
-        
+
         return symbolStatus
     }
 

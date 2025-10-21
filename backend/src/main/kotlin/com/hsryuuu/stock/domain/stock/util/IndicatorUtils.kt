@@ -7,21 +7,21 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class IndicatorUtils {
+object IndicatorUtils {
 
     private val log = LoggerFactory.getLogger(IndicatorUtils::class.java)
+
 
     fun calculateBollingerBand(
         period: Int = 20,
         kValue: Double = 2.00,
-        candles: List<StockCandle>,
+        closes: List<Double>,
     ): IndicatorValues.BollingerBand? {
-        if (candles.size < period) {
-            log.warn("Not enough data for Bollinger Band calculation: ${candles.size}/20")
+        if (closes.size < period) {
+            log.warn("Not enough data for Bollinger Band calculation: ${closes.size}/20")
             return null
         }
 
-        val closes = candles.map { it.close.toDouble() }
         val mean = closes.average()
         val stdDev = sqrt(closes.map { (it - mean).pow(2) }.average())
 
