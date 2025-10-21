@@ -1,6 +1,6 @@
 package com.hsryuuu.stock.infra.redis.common
 
-import com.hsryuuu.stock.domain.market.model.ExchangeRateDto
+import com.hsryuuu.stock.domain.market.common.model.ExchangeRateDto
 import com.hsryuuu.stock.domain.stock.model.dto.SymbolStatus
 
 

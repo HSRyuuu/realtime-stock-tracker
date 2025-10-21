@@ -1,7 +1,7 @@
-package com.hsryuuu.stock.domain.market.controller
+package com.hsryuuu.stock.domain.market.common.controller
 
-import com.hsryuuu.stock.domain.market.model.ExchangeRateDto
-import com.hsryuuu.stock.domain.market.service.ExchangeService
+import com.hsryuuu.stock.domain.market.common.model.ExchangeRateDto
+import com.hsryuuu.stock.domain.market.common.service.ExchangeService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping

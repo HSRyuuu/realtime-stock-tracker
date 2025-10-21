@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.domain.market.model
+package com.hsryuuu.stock.domain.market.common.model
 
 import java.time.LocalDateTime
 

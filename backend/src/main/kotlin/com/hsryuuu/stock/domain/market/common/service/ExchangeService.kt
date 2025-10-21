@@ -1,7 +1,7 @@
-package com.hsryuuu.stock.domain.market.service
+package com.hsryuuu.stock.domain.market.common.service
 
 import com.hsryuuu.stock.application.utils.TimeUtils
-import com.hsryuuu.stock.domain.market.model.ExchangeRateDto
+import com.hsryuuu.stock.domain.market.common.model.ExchangeRateDto
 import com.hsryuuu.stock.infra.redis.common.RedisKeys
 import com.hsryuuu.stock.infra.redis.common.StringRedisUtils
 import com.hsryuuu.stock.infra.stockapi.provider.market.TwelveDataMarketDataProvider
