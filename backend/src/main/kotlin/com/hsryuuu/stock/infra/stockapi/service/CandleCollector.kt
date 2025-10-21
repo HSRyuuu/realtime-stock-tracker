@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @Service
 class CandleCollector(
@@ -60,7 +62,10 @@ class CandleCollector(
 
 
     private fun saveCandles(symbol: String, timeframe: Timeframe, candles: List<CandleDto>) {
-        val filtered = candles.filterNot { TimeUtils.isTodayInUs(it.date) }
+        val filtered = candles.filterNot {
+            TimeUtils.isTodayInUs(it.date)
+                    && !StockTimeUtils.isAfterClose(ZonedDateTime.now(ZoneId.of(TIME_ZONE_AMERICA_NEW_YORK)))
+        }
         candleRepository.saveAllCandles(filtered.map {
             CandleDto.toEntity(
                 symbol,
