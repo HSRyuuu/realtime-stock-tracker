@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "종목(symbol) API")
-@RequestMapping("/api/stock/symbols")
+@RequestMapping("/api/public/stock/symbols")
 @RestController
 class SymbolController(
     private val symbolService: SymbolService,

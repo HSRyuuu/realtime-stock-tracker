@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 
 @Tag(name = "캔들 API")
-@RequestMapping("/api/stock/candles")
+@RequestMapping("/api/public/stock/candles")
 @RestController
 class CandleController(
     private val candleService: CandleService

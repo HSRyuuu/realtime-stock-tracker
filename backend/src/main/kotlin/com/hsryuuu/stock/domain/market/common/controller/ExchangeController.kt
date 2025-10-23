@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "환율 API")
-@RequestMapping("/api/exchange")
+@RequestMapping("/api/public/exchange")
 @RestController
 class ExchangeController(
     private val exchangeService: ExchangeService,

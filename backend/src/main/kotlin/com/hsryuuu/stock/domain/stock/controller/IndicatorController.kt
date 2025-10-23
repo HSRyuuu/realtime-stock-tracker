@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "기술적 지표 API")
-@RequestMapping("/api/indicators")
+@RequestMapping("/api/public/indicators")
 @RestController
 class IndicatorController(
     private val indicatorService: IndicatorService
