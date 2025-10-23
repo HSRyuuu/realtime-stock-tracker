@@ -36,6 +36,14 @@ dependencies {
     // Base
     implementation("org.springframework.boot:spring-boot-starter-web")
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    // security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+    // JWT 인증을 원하시면 다음 의존성도 추가하세요
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
 
     // Jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
