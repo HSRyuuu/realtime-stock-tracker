@@ -1,10 +1,10 @@
 package com.hsryuuu.stock.domain.stock.service
 
-import com.hsryuuu.stock.application.type.IndicatorSignalType
 import com.hsryuuu.stock.domain.stock.event.CandleEventProducer
 import com.hsryuuu.stock.domain.stock.model.dto.IndicatorSignals
 import com.hsryuuu.stock.domain.stock.model.type.Timeframe
 import com.hsryuuu.stock.domain.stock.repository.CustomStockCandleRepository
+import com.hsryuuu.stock.domain.stock.util.IndicatorUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -31,13 +31,7 @@ class IndicatorService(
         val currentPrice = latestCandle.close.toDouble()
         val upper = bollingerBand.upper.toDouble()
         val lower = bollingerBand.lower.toDouble()
-
-        val positionPercent = ((currentPrice - lower) / (upper - lower)) * 100
-        val signalType = IndicatorSignalType.fromBollingerBand(positionPercent)
-
-        return IndicatorSignals.BollingerBand(
-            ready = true,
-            signalType,
+        return IndicatorUtils.getBollingerBandCurrentPosition(
             currentPrice,
             upper,
             lower,
@@ -58,16 +52,12 @@ class IndicatorService(
             candleEventProducer.sendRSICalculateEvent(symbol, Timeframe.DAY1)
             return IndicatorSignals.RSI(ready = false)
         }
-
-        val signalType = IndicatorSignalType.fromRsi(rsi.rsi.toDouble())
-
-        return IndicatorSignals.RSI(
-            ready = true,
-            signalType,
+        
+        return IndicatorUtils.getRSICurrentPosition(
             rsi.rsi.toDouble(),
             rsi.avgGain.toDouble(),
             rsi.avgLoss.toDouble(),
-            period = rsi.period
+            rsi.period
         )
 
     }
