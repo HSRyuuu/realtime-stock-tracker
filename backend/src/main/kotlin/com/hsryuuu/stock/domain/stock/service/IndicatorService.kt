@@ -23,7 +23,7 @@ class IndicatorService(
             return IndicatorSignals.BollingerBand(ready = false)
         }
         val bollingerBand = candleRepository.findLatestBollingerBand(symbol, Timeframe.DAY1)
-        if (bollingerBand == null) {
+        if (bollingerBand == null || bollingerBand.date.isBefore(latestCandle.date)) {
             candleEventProducer.sendBollingerBandCalculateEvent(symbol, Timeframe.DAY1)
             return IndicatorSignals.BollingerBand(ready = false)
 
@@ -54,7 +54,7 @@ class IndicatorService(
         }
 
         val rsi = candleRepository.findLatestRSI(symbol, Timeframe.DAY1)
-        if (rsi == null) {
+        if (rsi == null || rsi.date.isBefore(latestCandle.date)) {
             candleEventProducer.sendRSICalculateEvent(symbol, Timeframe.DAY1)
             return IndicatorSignals.RSI(ready = false)
         }
