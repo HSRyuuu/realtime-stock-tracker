@@ -35,7 +35,7 @@ class SwaggerConfig {
                             .type(SecurityScheme.Type.HTTP)
                             .scheme("bearer")
                             .bearerFormat("JWT")
-                            .description("token => " + test())
+                            .description(jwtToken())
                     )
             )
             // 모든 API 요청에 인증 필요
@@ -45,7 +45,7 @@ class SwaggerConfig {
 
     }
 
-    fun test(): String {
+    fun jwtToken(): String {
         val userInfo = UserInfo(
             id = 1L,
             username = "admin",

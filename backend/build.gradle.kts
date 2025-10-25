@@ -64,7 +64,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     // swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
