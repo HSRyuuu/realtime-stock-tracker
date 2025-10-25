@@ -1,4 +1,4 @@
-package com.hsryuuu.stock.domain.user.member
+package com.hsryuuu.stock.domain.user.member.repository
 
 import com.hsryuuu.stock.domain.user.member.model.entity.Member
 import org.springframework.data.jpa.repository.JpaRepository

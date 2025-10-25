@@ -110,14 +110,6 @@ class CustomStockCandleRepository(
         return stockCandlesPeriod + stockCandlesAfter
     }
 
-    fun findAllBollingerBands(symbol: String, timeframe: Timeframe, date: LocalDate): List<BollingerBand> {
-        val findCond = getBollingerBandSymbolAndTimeframeCondition(symbol, timeframe)
-        return queryFactory.selectFrom(bollingerBand)
-            .where(findCond, bollingerBand.date.goe(date))
-            .orderBy(bollingerBand.date.asc())
-            .fetch()
-    }
-
     fun findLatestBollingerBandDate(symbol: String, timeframe: Timeframe): LocalDate? {
         val findCond = getBollingerBandSymbolAndTimeframeCondition(symbol, timeframe)
         return queryFactory.select(bollingerBand.date)

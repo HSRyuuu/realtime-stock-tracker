@@ -6,9 +6,9 @@ import com.hsryuuu.stock.application.security.JwtTokenProvider
 import com.hsryuuu.stock.application.security.UserInfo
 import com.hsryuuu.stock.domain.user.auth.model.LoginRequest
 import com.hsryuuu.stock.domain.user.auth.model.LoginResponse
-import com.hsryuuu.stock.domain.user.member.MemberRepository
 import com.hsryuuu.stock.domain.user.member.model.dto.MemberSignupRequest
 import com.hsryuuu.stock.domain.user.member.model.entity.Member
+import com.hsryuuu.stock.domain.user.member.repository.MemberRepository
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -80,7 +80,7 @@ class AuthService(
     fun logout(httpServletRequest: HttpServletRequest) {
         val accessToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
         val userInfo = authManager.getCurrentUser()
-
+        // TODO: accessToken 블랙리스트
     }
 
 
