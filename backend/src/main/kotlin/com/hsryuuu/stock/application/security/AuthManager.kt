@@ -25,4 +25,6 @@ class AuthManager {
         return UserPrincipal.toUserInfo(principal)
     }
 
+    fun getCurrentUserId(): Long? = getCurrentUser()?.id
+
 }

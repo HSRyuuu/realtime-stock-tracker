@@ -1,6 +1,6 @@
 package com.hsryuuu.stock.application.security
 
-import com.hsryuuu.stock.domain.user.member.MemberRepository
+import com.hsryuuu.stock.domain.user.member.repository.MemberRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
