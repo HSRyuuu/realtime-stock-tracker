@@ -56,33 +56,27 @@ class IndicatorCalculator(
 
     @Transactional
     fun calcRSI(symbol: String, timeframe: Timeframe, period: Int): List<StockRsi> {
-        // 1. 최신 RSI가 계산된 날짜 이후의 캔들 조회
         val lastRSIDate = candleRepository.findLatestRSIDate(symbol, timeframe)
         val candles = findCandlesForCalculate(symbol, timeframe, period, lastRSIDate)
 
-        // 2. 캔들이 부족하면 종료
         if (candles.size <= period) {
             log.info("[IndicatorCalculator.calcRSI] Candle 건수가 부족: ${candles.size}/$period")
             return emptyList()
         }
 
-        // 3. RSI 계산용 종가 리스트 (오래된 → 최신 순)
         val closes = candles.map { it.close.toDouble() }
-
-        // 4. RSI 누적 계산 (EMA 기반)
-        val results = mutableListOf<StockRsi>()
-        var avgGain = 0.0
-        var avgLoss = 0.0
-
-        // 초기 평균 계산 (단순 평균으로 시작)
         val changes = closes.zipWithNext { prev, curr -> curr - prev }
+
         val gains = changes.map { maxOf(it, 0.0) }
         val losses = changes.map { maxOf(-it, 0.0) }
 
-        avgGain = gains.take(period).average()
-        avgLoss = losses.take(period).average()
+        // ✅ 초기 평균 계산 (단순 평균)
+        var avgGain = gains.take(period).average()
+        var avgLoss = losses.take(period).average()
 
-        // 5. period번째 이후부터 EMA 방식으로 갱신
+        val results = mutableListOf<StockRsi>()
+
+        // ✅ period번째 이후부터 Wilder 방식(EMA 유사) 누적 계산
         for (i in period until closes.size) {
             val gain = gains[i - 1]
             val loss = losses[i - 1]
@@ -91,9 +85,14 @@ class IndicatorCalculator(
             avgLoss = ((avgLoss * (period - 1)) + loss) / period
 
             val rs = if (avgLoss == 0.0) Double.POSITIVE_INFINITY else avgGain / avgLoss
-            val rsi = 100 - (100 / (1 + rs))
+            val rsi = when {
+                avgLoss == 0.0 && avgGain == 0.0 -> 50.0
+                avgLoss == 0.0 -> 100.0
+                avgGain == 0.0 -> 0.0
+                else -> 100 - (100 / (1 + rs))
+            }
 
-            val candle = candles[i] // 현재 캔들
+            val candle = candles[i]
             results.add(
                 StockRsi(
                     symbol = symbol,
@@ -108,7 +107,6 @@ class IndicatorCalculator(
             )
         }
 
-        // 6. 저장 및 반환
         return candleRepository.saveAllRsi(results)
     }
 
