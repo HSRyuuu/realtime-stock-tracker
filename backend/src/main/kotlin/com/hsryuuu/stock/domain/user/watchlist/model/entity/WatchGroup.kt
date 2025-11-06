@@ -20,11 +20,8 @@ data class WatchGroup(
     @Column(nullable = false, length = 50)
     val groupName: String,
 
-    @OneToMany(mappedBy = "group", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val symbols: MutableList<WatchItem> = mutableListOf(),
-
     val sortOrder: Int? = null,
-    
+
     @CreatedDate
     val createdAt: LocalDateTime = LocalDateTime.now(),
 

@@ -15,10 +15,6 @@ data class WatchItem(
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    val group: WatchGroup,
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     val member: Member,
 

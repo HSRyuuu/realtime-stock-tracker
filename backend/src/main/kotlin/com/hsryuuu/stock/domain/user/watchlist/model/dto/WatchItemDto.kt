@@ -1,6 +1,7 @@
 package com.hsryuuu.stock.domain.user.watchlist.model.dto
 
-// WatchItem 엔티티를 위한 간단한 DTO도 필요합니다
+import com.hsryuuu.stock.domain.user.watchlist.model.entity.WatchItem
+
 data class WatchItemDto(
     val id: Long?,
     val symbol: String,
@@ -8,7 +9,7 @@ data class WatchItemDto(
     val sortOrder: Int?
 ) {
     companion object {
-        fun fromEntity(entity: com.hsryuuu.stock.domain.user.watchlist.model.entity.WatchItem): WatchItemDto {
+        fun fromEntity(entity: WatchItem): WatchItemDto {
             return WatchItemDto(
                 id = entity.id,
                 symbol = entity.symbol,

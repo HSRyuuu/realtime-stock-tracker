@@ -5,14 +5,15 @@ import com.hsryuuu.stock.application.security.AuthManager
 import com.hsryuuu.stock.domain.stock.model.dto.SymbolWithIndicatorSignals
 import com.hsryuuu.stock.domain.stock.repository.CustomIndicatorRepository
 import com.hsryuuu.stock.domain.user.watchlist.model.dto.WatchGroupDto
-import com.hsryuuu.stock.domain.user.watchlist.repository.CustomWatchListRepository
+import com.hsryuuu.stock.domain.user.watchlist.model.entity.WatchItem
+import com.hsryuuu.stock.domain.user.watchlist.repository.CustomWatchItemRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class WatchListService(
-    private val watchListRepository: CustomWatchListRepository,
+    private val watchListRepository: CustomWatchItemRepository,
     private val indicatorRepository: CustomIndicatorRepository,
     private val authManager: AuthManager
 ) {
@@ -29,17 +30,24 @@ class WatchListService(
 
     @Transactional(readOnly = true)
     fun getWatchGroups(): List<WatchGroupDto> {
-        val memberId = authManager.getCurrentUserId() ?: throw GlobalException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.")
+        val memberId = authManager.getCurrentUserId() ?: throw GlobalException(
+            HttpStatus.UNAUTHORIZED,
+            "로그인이 필요합니다."
+        )
         return watchListRepository.findAllWatchGroups(memberId)
             .map { WatchGroupDto.fromEntity(it) }
             .toList();
-
     }
 
     @Transactional(readOnly = true)
-    fun getSymbolsWithIndicators() {
-        indicatorRepository.getCurrentPriceWithIndicators(listOf("TSLA", "MSFT", "NVDA"))
-    }
+    fun getWatchItems(): List<SymbolWithIndicatorSignals> {
+        val memberId = authManager.getCurrentUserIdOrElseThrow()
+        val watchItemSymbols = watchListRepository.findWatchItemsByMemberId(memberId)
+            .map(WatchItem::symbol).toList()
+        val currentPriceWithIndicators =
+            indicatorRepository.getCurrentPriceWithIndicators(watchItemSymbols)
 
+        return currentPriceWithIndicators.map { SymbolWithIndicatorSignals.from(it) }.toList()
+    }
 
 }

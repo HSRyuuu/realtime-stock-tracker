@@ -1,5 +1,7 @@
 package com.hsryuuu.stock.application.security
 
+import com.hsryuuu.stock.application.exception.GlobalException
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
@@ -26,5 +28,11 @@ class AuthManager {
     }
 
     fun getCurrentUserId(): Long? = getCurrentUser()?.id
+
+    fun getCurrentUserIdOrElseThrow(): Long =
+        getCurrentUserId() ?: throw GlobalException(
+            HttpStatus.UNAUTHORIZED,
+            "로그인이 필요합니다."
+        )
 
 }
